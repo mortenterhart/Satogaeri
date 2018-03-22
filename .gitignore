@@ -26,3 +26,6 @@ hs_err_pid*
 # Intellij IDEA config folder
 .idea/
 *.iml
+build/
+*.class
+.DS_Store
