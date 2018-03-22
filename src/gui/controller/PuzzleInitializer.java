@@ -9,4 +9,6 @@ public class PuzzleInitializer {
     public PuzzleInitializer(GridPane grid) {
         this.grid = grid;
     }
+
+    // TODO: Work with stackpanes
 }
