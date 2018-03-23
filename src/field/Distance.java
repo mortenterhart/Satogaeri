@@ -10,7 +10,11 @@ public class Distance {
         this.distance = distance;
     }
 
-    public int getDistance() {
+    public int toIntValue() {
         return distance;
+    }
+
+    public boolean isAny() {
+        return distance < 0;
     }
 }

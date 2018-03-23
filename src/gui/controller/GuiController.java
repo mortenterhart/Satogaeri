@@ -1,5 +1,6 @@
 package gui.controller;
 
+import field.Board;
 import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
 
@@ -10,6 +11,8 @@ public class GuiController {
 
     @FXML
     private void initialize() {
-        PuzzleInitializer initializer = new PuzzleInitializer(gridPane);
+        gridPane.setGridLinesVisible(false);
+        PuzzleInitializer initializer = new PuzzleInitializer(gridPane, new Board(10));
+        initializer.setup();
     }
 }

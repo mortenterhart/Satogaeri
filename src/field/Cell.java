@@ -1,13 +1,13 @@
 package field;
 
 public class Cell {
-    private Circle placedCircle;
+    private MovableCircle placedCircle;
 
-    public void registerCircle(Circle circle) {
+    public void registerCircle(MovableCircle circle) {
         placedCircle = circle;
     }
 
-    public void unregister() {
+    public void detachCircle() {
         placedCircle = null;
     }
 

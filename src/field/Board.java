@@ -7,8 +7,38 @@ public class Board {
     private List<Region> containedRegions;
     private Cell[][] cellBoard;
 
-    public Board() {
+    public Board(int dimension) {
         containedRegions = new ArrayList<>();
-        cellBoard = new Cell[10][10];
+        cellBoard = new Cell[dimension][dimension];
+    }
+
+    public int getWidth() {
+        return cellBoard.length;
+    }
+
+    public int getHeight() {
+        if (cellBoard.length > 0) {
+            return cellBoard[0].length;
+        }
+
+        return 0;
+    }
+
+    public Cell get(int x, int y) {
+        return cellBoard[x][y];
+    }
+
+    public void set(Cell cell, int x, int y) {
+        checkBoundaries(x, y);
+        cellBoard[x][y] = cell;
+    }
+
+    private void checkBoundaries(int posX, int posY) {
+        if (posX < 0 || posX >= cellBoard.length ||
+            posY < 0 || posY >= cellBoard[posX].length) {
+
+            throw new IndexOutOfBoundsException("tried to access position (" + posX + ", " +
+                    posY + ") with board dimension of " + getWidth());
+        }
     }
 }
