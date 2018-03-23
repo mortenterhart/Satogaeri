@@ -25,12 +25,17 @@ public class Board {
     }
 
     public Cell get(int x, int y) {
+        checkBoundaries(x, y);
         return cellBoard[x][y];
     }
 
     public void set(Cell cell, int x, int y) {
         checkBoundaries(x, y);
         cellBoard[x][y] = cell;
+    }
+
+    public void addRegion(Region region) {
+        containedRegions.add(region);
     }
 
     private void checkBoundaries(int posX, int posY) {
@@ -40,5 +45,9 @@ public class Board {
             throw new IndexOutOfBoundsException("tried to access position (" + posX + ", " +
                     posY + ") with board dimension of " + getWidth());
         }
+    }
+
+    public List<Region> getRegions() {
+        return containedRegions;
     }
 }
