@@ -23,6 +23,10 @@ public class Application extends javafx.application.Application {
         Scene windowScene = new Scene(rootElement);
         primaryStage.setScene(windowScene);
 
+        primaryStage.setOnCloseRequest(event -> {
+            primaryStage.close();
+        });
+
         primaryStage.show();
     }
 

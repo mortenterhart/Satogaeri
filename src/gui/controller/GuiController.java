@@ -1,13 +1,16 @@
 package gui.controller;
 
-import field.Board;
-import field.Cell;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import puzzle.Board;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import main.AlgorithmParameters;
+import solver.SatogaeriSolver;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class GuiController {
     private Board cellBoard;
@@ -30,22 +33,15 @@ public class GuiController {
 
     @FXML
     private void launchSolver() {
-        for (int x = 0; x < cellBoard.getWidth(); x++) {
-            System.out.print(String.format("%2d ", x));
-            for (int y = 0; y < cellBoard.getHeight(); y++) {
-                Cell cell = cellBoard.get(x, y);
-                if (cell.isAnyCircleRegistered()) {
-                    int distance = cell.getCircle().getDistance();
-                    if (distance >= 0) {
-                        System.out.print(distance + " ");
-                    } else {
-                        System.out.print("O ");
-                    }
-                } else {
-                    System.out.print(". ");
-                }
+        SatogaeriSolver solver = new SatogaeriSolver(cellBoard);
+        solver.valueProperty().addListener(new ChangeListener<Board>() {
+            @Override
+            public void changed(ObservableValue<? extends Board> observable, Board oldValue, Board newValue) {
+
             }
-            System.out.println();
-        }
+        });
+
+        ExecutorService service = Executors.newCachedThreadPool();
+        service.submit(solver);
     }
 }

@@ -1,10 +1,5 @@
 package gui.controller;
 
-import field.Board;
-import field.Cell;
-import field.Distance;
-import field.MovableCircle;
-import field.Region;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
@@ -18,6 +13,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import main.AlgorithmParameters;
 import main.GUISettings;
+import puzzle.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,14 +48,14 @@ public class PuzzleInitializer {
     }
 
     private void prepareGridWithStackPanes() {
-        for (int x = 0; x < grid.getRowConstraints().size(); x++) {
-            for (int y = 0; y < grid.getColumnConstraints().size(); y++) {
+        for (int row = 0; row < grid.getRowConstraints().size(); row++) {
+            for (int column = 0; column < grid.getColumnConstraints().size(); column++) {
                 StackPane basePane = new StackPane();
                 stackPaneList.add(basePane);
-                grid.add(basePane, y, x);
+                grid.add(basePane, column, row);
                 GridPane.setValignment(basePane, VPos.CENTER);
                 GridPane.setHalignment(basePane, HPos.CENTER);
-                board.set(new Cell(x, y), x, y);
+                board.set(new Cell(row, column), row, column);
             }
         }
     }
@@ -184,7 +180,9 @@ public class PuzzleInitializer {
         gridStackPane.getChildren().add(gridCircle);
         gridStackPane.getChildren().add(distanceLabel);
 
-        board.get(rowIndex, columnIndex).registerCircle(new MovableCircle(distance));
+        Cell circleCell = board.get(columnIndex, rowIndex);
+        circleCell.registerCircle(new FieldCircle(distance));
+        circleCell.setVisited(true);
     }
 
     private int convertToConsecutiveIndex(int rowIndex, int columnIndex) {
@@ -206,180 +204,180 @@ public class PuzzleInitializer {
 
         int[][] region1 = {
                 { 0, 0 },
-                { 0, 1 },
                 { 1, 0 },
+                { 0, 1 },
                 { 1, 1 },
-                { 1, 2 },
+                { 2, 1 },
                 { 2, 2 }
         };
 
         int[][] region2 = {
-                { 0, 2 },
-                { 0, 3 },
-                { 1, 3 }
-        };
-
-        int[][] region3 = {
-                { 0, 4 },
-                { 0, 5 },
-                { 0, 6 },
-                { 0, 7 },
-                { 0, 8 },
-                { 1, 4 },
-                { 1, 6 }
-        };
-
-        int[][] region4 = {
-                { 0, 9 },
-                { 1, 7 },
-                { 1, 8 },
-                { 1, 9 },
-                { 2, 8 },
-                { 2, 9 }
-        };
-
-        int[][] region5 = {
-                { 1, 5 },
-                { 2, 5 },
-                { 3, 5 },
-                { 3, 6 }
-        };
-
-        int[][] region6 = {
                 { 2, 0 },
                 { 3, 0 },
                 { 3, 1 }
         };
 
+        int[][] region3 = {
+                { 4, 0 },
+                { 5, 0 },
+                { 6, 0 },
+                { 7, 0 },
+                { 8, 0 },
+                { 4, 1 },
+                { 6, 1 }
+        };
+
+        int[][] region4 = {
+                { 9, 0 },
+                { 7, 1 },
+                { 8, 1 },
+                { 9, 1 },
+                { 8, 2 },
+                { 9, 2 }
+        };
+
+        int[][] region5 = {
+                { 5, 1 },
+                { 5, 2 },
+                { 5, 3 },
+                { 6, 3 }
+        };
+
+        int[][] region6 = {
+                { 0, 2 },
+                { 0, 3 },
+                { 1, 3 }
+        };
+
         int[][] region7 = {
-                { 2, 1 }
+                { 1, 2 }
         };
 
         int[][] region8 = {
-                { 2, 3 },
-                { 2, 4 },
+                { 3, 2 },
+                { 4, 2 },
                 { 3, 3 }
         };
 
         int[][] region9 = {
-                { 2, 6 },
-                { 2, 7 },
-                { 3, 7 },
-                { 3, 8 },
-                { 3, 9 }
+                { 6, 2 },
+                { 7, 2 },
+                { 7, 3 },
+                { 8, 3 },
+                { 9, 3 }
         };
 
         int[][] region10 = {
-                { 3, 2 },
-                { 4, 2 }
+                { 2, 3 },
+                { 2, 4 }
         };
 
         int[][] region11 = {
-                { 3, 4 },
                 { 4, 3 },
+                { 3, 4 },
                 { 4, 4 },
-                { 4, 5 }
+                { 5, 4 }
         };
 
         int[][] region12 = {
-                { 4, 0 },
-                { 4, 1 },
-                { 5, 0 }
+                { 0, 4 },
+                { 1, 4 },
+                { 0, 5 }
         };
 
         int[][] region13 = {
-                { 4, 6 },
-                { 4, 7 },
-                { 4, 8 }
-        };
-
-        int[][] region14 = {
-                { 4, 9 },
-                { 5, 8 },
-                { 5, 9 }
-        };
-
-        int[][] region15 = {
-                { 5, 1 },
-                { 5, 2 },
-                { 5, 3 }
-        };
-
-        int[][] region16 = {
-                { 5, 4 },
-                { 5, 5 },
-                { 5, 6 },
-                { 6, 5 }
-        };
-
-        int[][] region17 = {
-                { 5, 7 },
-                { 6, 7 }
-        };
-
-        int[][] region18 = {
-                { 6, 0 },
-                { 6, 1 },
-                { 6, 2 },
-                { 7, 2 },
-                { 7, 3 }
-        };
-
-        int[][] region19 = {
-                { 6, 3 },
                 { 6, 4 },
                 { 7, 4 },
                 { 8, 4 }
         };
 
-        int[][] region20 = {
-                { 6, 6 },
+        int[][] region14 = {
+                { 9, 4 },
+                { 8, 5 },
+                { 9, 5 }
+        };
+
+        int[][] region15 = {
+                { 1, 5 },
+                { 2, 5 },
+                { 3, 5 }
+        };
+
+        int[][] region16 = {
+                { 4, 5 },
+                { 5, 5 },
+                { 6, 5 },
+                { 5, 6 }
+        };
+
+        int[][] region17 = {
                 { 7, 5 },
                 { 7, 6 }
         };
 
+        int[][] region18 = {
+                { 0, 6 },
+                { 1, 6 },
+                { 2, 6 },
+                { 2, 7 },
+                { 3, 7 }
+        };
+
+        int[][] region19 = {
+                { 3, 6 },
+                { 4, 6 },
+                { 4, 7 },
+                { 4, 8 }
+        };
+
+        int[][] region20 = {
+                { 6, 6 },
+                { 5, 7 },
+                { 6, 7 }
+        };
+
         int[][] region21 = {
-                { 6, 8 },
-                { 6, 9 },
-                { 7, 9 }
+                { 8, 6 },
+                { 9, 6 },
+                { 9, 7 }
         };
 
         int[][] region22 = {
-                { 7, 0 },
-                { 7, 1 },
-                { 8, 0 },
-                { 8, 1 },
-                { 8, 2 },
-                { 9, 0 }
+                { 0, 7 },
+                { 1, 7 },
+                { 0, 8 },
+                { 1, 8 },
+                { 2, 8 },
+                { 0, 9 }
         };
 
         int[][] region23 = {
                 { 7, 7 },
-                { 8, 7 },
+                { 7, 8 },
                 { 8, 8 },
-                { 8, 9 },
                 { 9, 8 },
+                { 8, 9 },
                 { 9, 9 }
         };
 
         int[][] region24 = {
-                { 7, 8 }
+                { 8, 7 }
         };
 
         int[][] region25 = {
-                { 8, 3 },
-                { 8, 5 },
-                { 9, 1 },
-                { 9, 2 },
-                { 9, 3 },
-                { 9, 4 },
-                { 9, 5 }
+                { 3, 8 },
+                { 5, 8 },
+                { 1, 9 },
+                { 2, 9 },
+                { 3, 9 },
+                { 4, 9 },
+                { 5, 9 }
         };
 
         int[][] region26 = {
-                { 8, 6 },
-                { 9, 6 },
-                { 9, 7 }
+                { 6, 8 },
+                { 6, 9 },
+                { 7, 9 }
         };
 
         addRegionToCellBoard(region1);
@@ -428,7 +426,7 @@ public class PuzzleInitializer {
             for (int[] newRegionCell : region) {
                 if (registeredRegion.containsCell(newRegionCell)) {
                     throw new IllegalStateException(String.format("trying to add cell (%d, %d) " +
-                                    "to new region while this cell is already registered at region %s", newRegionCell[0],
+                                    "to new region while this cell is already registered in region %s", newRegionCell[0],
                             newRegionCell[1], registeredRegion.toString()));
                 }
             }

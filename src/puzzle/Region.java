@@ -1,10 +1,11 @@
-package field;
+package puzzle;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Region {
     private List<Cell> cells;
+    private boolean isFinal = false;
 
     public Region() {
         cells = new ArrayList<>();
@@ -27,6 +28,33 @@ public class Region {
         return false;
     }
 
+    public boolean contains(Cell cell) {
+        return cells.contains(cell);
+    }
+
+    public boolean contains(FieldCircle circle) {
+        for (Cell regionCell : cells) {
+            if (regionCell != null && regionCell.isAnyCircleRegistered() &&
+                    regionCell.getCircle() == circle) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void setFinal(boolean isFinal) {
+        this.isFinal = isFinal;
+
+        for (Cell regionCell : cells) {
+            regionCell.setInvariant(isFinal);
+        }
+    }
+
+    public boolean isFinal() {
+        return isFinal;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder("Region { ");
@@ -36,5 +64,9 @@ public class Region {
         builder.append(" }");
 
         return builder.toString();
+    }
+
+    public List<Cell> getCells() {
+        return cells;
     }
 }
