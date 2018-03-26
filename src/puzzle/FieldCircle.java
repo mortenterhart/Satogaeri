@@ -2,6 +2,7 @@ package puzzle;
 
 public class FieldCircle {
     private Distance moveDistance;
+    private boolean isInvariant = false;
 
     public FieldCircle() {
         moveDistance = Distance.ANY;
@@ -17,6 +18,14 @@ public class FieldCircle {
 
     public Distance getDistance() {
         return moveDistance;
+    }
+
+    public boolean isInvariant() {
+        return isInvariant;
+    }
+
+    public void setInvariant(boolean invariant) {
+        isInvariant = invariant;
     }
 
     public boolean hasZeroDistance() {

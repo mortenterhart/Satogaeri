@@ -38,22 +38,14 @@ public class SatogaeriSolver extends Task<Board> {
     @Override
     protected Board call() throws Exception {
         findSolution();
-        cellBoard.print();
+        //cellBoard.print();
         return null;
     }
 
     private void findSolution() {
         markZeroDistanceCellsInvariant();
 
-        outputCircleList();
-
         moveCirclesWithSolelySolution();
-    }
-
-    private void outputCircleList() {
-        for (FieldCircle circle : boardCircles) {
-            System.out.println(inducer.getCellBy(circle));
-        }
     }
 
     private void markZeroDistanceCellsInvariant() {
@@ -71,7 +63,7 @@ public class SatogaeriSolver extends Task<Board> {
                 if (circle != null) {
                     Cell originCell = inducer.getCellBy(circle);
                     System.out.println("Origin Cell: " + originCell);
-                    if (originCell != null && !circle.hasAnyDistance()) {
+                    if (originCell != null && !circle.hasAnyDistance() && !circle.isInvariant()) {
                         List<MoveProposal> possibleMoves = new ArrayList<>(4);
 
                         System.out.println("Calculating moves for " + cellToString(originCell.getGridX(), originCell.getGridY()) + "\n");
@@ -79,8 +71,6 @@ public class SatogaeriSolver extends Task<Board> {
                             MoveProposal proposal = identifyPossibleMove(originCell, direction);
                             if (proposal != null) {
                                 possibleMoves.add(proposal);
-                            } else {
-                                System.out.println("proposal is null");
                             }
                         }
 
@@ -98,6 +88,9 @@ public class SatogaeriSolver extends Task<Board> {
                             originCell.detachCircle();
                             destinationCell.registerCircle(circle);
                             inducer.getRegionBy(destinationCell).setFinal(true);
+
+                            // New condition: circle becomes invariant
+                            circle.setInvariant(true);
 
                             // Make move and mark all cells on the way as visited
                             int distance = circle.getDistance().toIntValue();
@@ -139,7 +132,7 @@ public class SatogaeriSolver extends Task<Board> {
 
     private boolean hasCirclesWithSolelySolution() {
         for (FieldCircle circle : boardCircles) {
-            if (circle != null && !circle.hasAnyDistance()) {
+            if (circle != null && !circle.hasAnyDistance() && !circle.isInvariant()) {
                 Cell originCell = inducer.getCellBy(circle);
                 List<MoveProposal> proposals = new ArrayList<>(4);
                 for (MoveDirection direction : MoveDirection.values()) {
@@ -164,126 +157,89 @@ public class SatogaeriSolver extends Task<Board> {
 
         switch (direction) {
             case LEFT:
-                //System.out.println("Checking if left move is possible");
                 int moveLeftX = origin.getGridX() - circleDistance;
-                //System.out.println("Left field would be (" + moveLeftX + ", " + origin.getGridY() + ") with distance " + circleDistance);
-                //System.out.println("moveLeftX >= 0: " + moveLeftX + " >= 0");
                 if (moveLeftX >= 0) {
                     for (int x = origin.getGridX() - 1; x > moveLeftX; x--) {
-                        //System.out.println("Next cell on left is " + cellToString(x, origin.getGridY()));
                         Cell pathCell = cellBoard.get(x, origin.getGridY());
-                        //System.out.println(pathCell);
                         if (pathCell.isVisited()) {
-                            //System.out.println("Cell is visited -> move not possible");
                             movePossible = false;
                         }
                     }
 
                     Cell destinationCell = cellBoard.get(moveLeftX, origin.getGridY());
-                    //System.out.println("Checking if last path cell " + cellToString(moveLeftX, origin.getGridY()) + " is invariant or visited");
                     if (destinationCell.isInvariant() || destinationCell.isVisited()) {
-                        // System.out.println("last cell is invariant or visited -> move not possible");
                         movePossible = false;
                     }
 
                     if (movePossible) {
-                        // System.out.println("move is possible !!");
                         return new MoveProposal(moveLeftX, origin.getGridY(), direction, new Distance(circleDistance));
                     }
                 }
                 break;
 
             case UP:
-                // System.out.println("Checking if up move is possible");
                 int moveUpY = origin.getGridY() - circleDistance;
-                // System.out.println("Up field would be (" + origin.getGridX() + ", " + moveUpY + ") with distance " + circleDistance);
-                // System.out.println("moveUpY >= 0: " + moveUpY + " >= 0");
                 if (moveUpY >= 0) {
                     for (int y = origin.getGridY() - 1; y > moveUpY; y--) {
-                        // System.out.println("Next cell on left is " + cellToString(origin.getGridX(), y));
                         Cell pathCell = cellBoard.get(origin.getGridX(), y);
-                        // System.out.println(pathCell);
                         if (pathCell.isVisited()) {
-                            // System.out.println("Cell is visited -> move not possible");
                             movePossible = false;
                         }
                     }
 
-                    // System.out.println("Checking if last path cell " + cellToString(origin.getGridX(), moveUpY) + " is invariant or visited");
                     Cell destinationCell = cellBoard.get(origin.getGridX(), moveUpY);
                     if (destinationCell.isInvariant() || destinationCell.isVisited()) {
-                        // System.out.println("last cell is invariant or visited -> move not possible");
                         movePossible = false;
                     }
 
                     if (movePossible) {
-                        // System.out.println("move is possible !!");
                         return new MoveProposal(origin.getGridX(), moveUpY, direction, new Distance(circleDistance));
                     }
                 }
                 break;
 
             case RIGHT:
-                System.out.println("Checking if right move is possible");
                 int moveRightX = origin.getGridX() + circleDistance;
-                System.out.println("Right field would be (" + moveRightX + ", " + origin.getGridY() + ") with distance " + circleDistance);
-                System.out.println("moveRightX < cellBoard.getWidth(): " + moveRightX + " < " + cellBoard.getWidth());
                 if (moveRightX < cellBoard.getWidth()) {
                     for (int x = origin.getGridX() + 1; x < moveRightX; x++) {
-                        System.out.println("Next cell on right is " + cellToString(x, origin.getGridY()));
                         Cell pathCell = cellBoard.get(x, origin.getGridY());
-                        System.out.println(pathCell);
                         if (pathCell.isVisited()) {
-                            System.out.println("Cell is visited -> move not possible");
                             movePossible = false;
                         }
                     }
 
                     Cell destinationCell = cellBoard.get(moveRightX, origin.getGridY());
-                    System.out.println("Checking if last path cell " + cellToString(moveRightX, origin.getGridY()) + " is invariant or visited");
                     if (destinationCell.isInvariant() || destinationCell.isVisited()) {
-                        System.out.println("last cell is invariant or visited -> move not possible");
                         movePossible = false;
                     }
 
                     if (movePossible) {
-                        System.out.println("move is possible !!");
                         return new MoveProposal(moveRightX, origin.getGridY(), direction, new Distance(circleDistance));
                     }
                 }
                 break;
 
             case DOWN:
-                // System.out.println("Checking if down move is possible");
                 int moveDownY = origin.getGridY() + circleDistance;
-                // System.out.println("Down field would be (" + origin.getGridX() + ", " + moveDownY + ") with distance " + circleDistance);
-                // System.out.println("moveDownY < cellBoard.getHeight(): " + moveDownY + " < " + cellBoard.getHeight());
                 if (moveDownY < cellBoard.getHeight()) {
                     for (int y = origin.getGridY() + 1; y < moveDownY; y++) {
-                        // System.out.println("Next cell on left is " + cellToString(origin.getGridX(), y));
                         Cell pathCell = cellBoard.get(origin.getGridX(), y);
-                        // System.out.println(pathCell);
                         if (pathCell.isVisited()) {
-                            // System.out.println("Cell is visited -> move not possible");
                             movePossible = false;
                         }
                     }
 
                     Cell destinationCell = cellBoard.get(origin.getGridX(), moveDownY);
-                    // System.out.println("Checking if last path cell " + cellToString(origin.getGridX(), moveDownY) + " is invariant or visited");
                     if (destinationCell.isInvariant() || destinationCell.isVisited()) {
-                        // System.out.println("last cell is invariant or visited -> move not possible");
                         movePossible = false;
                     }
 
                     if (movePossible) {
-                        // System.out.println("move is possible !!");
                         return new MoveProposal(origin.getGridX(), moveDownY, direction, new Distance(circleDistance));
                     }
                 }
                 break;
         }
-        //System.out.println();
 
         return null;
     }
