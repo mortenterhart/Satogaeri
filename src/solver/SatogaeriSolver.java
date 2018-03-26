@@ -17,10 +17,13 @@ public class SatogaeriSolver extends Task<Board> {
 
     private AssociationInducer inducer;
 
+    private List<MoveProposal> recentMoves;
+
     public SatogaeriSolver(Board cellBoard) {
         this.cellBoard = cellBoard;
         this.boardCircles = cellBoard.getAllRegisteredCircles();
         this.inducer = new AssociationInducer(cellBoard);
+        this.recentMoves = new ArrayList<>();
     }
 
     /**
@@ -46,6 +49,29 @@ public class SatogaeriSolver extends Task<Board> {
         markZeroDistanceCellsInvariant();
 
         moveCirclesWithSolelySolution();
+
+        while (!allCirclesAreInvariant()) {
+            // TODO: Start with all circles in invariant regions where a circle is already invariant
+            // TODO: Use the Warnsdorf algorithm similar to the Knight's tour and move the circle preferably to
+            //       fields with the least amount of free neighbour fields
+            // TODO: Each iteration check if there are circles that have only one solution to move
+            // TODO: Implement backtracking by saving all move proposals to the list recentMoves and add a reference to the circle
+            //       to be able to know which circle moved
+            // TODO: Each new move will be appended to that list and save the current move in an integer pointer
+            // TODO: Iterate over cells and look if there are cells that can only be accessed by one circle
+            //       Make these steps then and save them to the history
+        }
+
+    }
+
+    private boolean allCirclesAreInvariant() {
+        for (FieldCircle circle : boardCircles) {
+            if (!circle.isInvariant()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void markZeroDistanceCellsInvariant() {
