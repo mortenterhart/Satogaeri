@@ -3,6 +3,8 @@ Satogaeri ist ein NP-vollständiges Problem.
 
 [How to solve Satogaeri](http://www.nikoli.com/en/puzzles/satogaeri/rule.html)
 
+![Satogaeri Puzzle](task/Satogaeri.png)
+
 ## Todos
 * [ ] Schritte und Bedingungen zur Prüfung im Algorithmus notieren
 * [ ] Müller wegen Abbildung auf Aufgabenblatt fragen, Regionen haben mehr als einen Kreis in Lösung
