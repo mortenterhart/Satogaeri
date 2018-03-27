@@ -33,7 +33,7 @@ public class AssociationInducer {
         Objects.requireNonNull(circle);
         for (int y = 0; y < board.getWidth(); y++) {
             for (int x = 0; x < board.getHeight(); x++) {
-                Cell currentCell = board.get(y, x);
+                Cell currentCell = board.get(x, y);
                 if (currentCell != null && currentCell.isAnyCircleRegistered() &&
                         currentCell.getCircle() == circle) {
                     return currentCell;

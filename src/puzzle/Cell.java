@@ -3,7 +3,7 @@ package puzzle;
 public class Cell {
     private final int gridX;
     private final int gridY;
-    private FieldCircle placedCircle;
+    private FieldCircle attachedCircle;
     private boolean isInvariant = false;
     private boolean isVisited = false;
 
@@ -13,11 +13,11 @@ public class Cell {
     }
 
     public void registerCircle(FieldCircle circle) {
-        placedCircle = circle;
+        attachedCircle = circle;
     }
 
     public void detachCircle() {
-        placedCircle = null;
+        attachedCircle = null;
     }
 
     public boolean isInvariant() {
@@ -37,7 +37,7 @@ public class Cell {
     }
 
     public FieldCircle getCircle() {
-        return placedCircle;
+        return attachedCircle;
     }
 
     public int getGridX() {
@@ -49,7 +49,7 @@ public class Cell {
     }
 
     public boolean isAnyCircleRegistered() {
-        return placedCircle != null;
+        return attachedCircle != null;
     }
 
     public boolean equals(int x, int y) {
@@ -58,8 +58,8 @@ public class Cell {
 
     @Override
     public String toString() {
-        return "Cell { x = " + gridX + ", y = " + gridY + ", circleRegistered = " +
-                (isAnyCircleRegistered() ? "yes, distance = " + placedCircle.getDistance() : "no") + " }";
+        return "Cell { x = " + gridX + ", y = " + gridY + ", visited = " + isVisited + ", invariant = " + isInvariant +
+                ", circleRegistered = " + (isAnyCircleRegistered() ? "yes, circle = " + attachedCircle : "no") + " }";
     }
 
 }

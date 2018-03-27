@@ -38,4 +38,24 @@ Satogaeri ist ein NP-vollständiges Problem.
     * Jede neue Eintragung bewirkt das richtige Setzen des `movePointer`
 * Grundsätzlich sollen nach den initialen Zügen, die nur eine Möglichkeit einer Bewegung des Kreises zulassen, und nach
   der Invariante der Distanzklasse 0 alle Züge in die Backtracking-Liste aufgenommen werden
-
+* Für Kreise **ohne Distanzangabe** wird parallel zu den Versuchen der anderen Kreise ein Versuch in alle Richtungen unternommen
+  (angefangen bei _Links_, _Oben_, _Rechts_ und _Unten_)
+    * Während einer jeden Zugberechnung in eine Richtung wird zuerst der am weitesten mögliche Zug des Kreises angenommen
+    * Dies verhindert, dass der **noch** mögliche Zug durch einen anderen Kreis abgeschnitten werden kann
+    * In jeder Iteration wird der Kreis nun ein Feld wieder zurückgezogen und geschaut, ob das aktuelle Feld geeignet ist
+    * Zusatz: Auf jedem Feld kann geprüft werden, ob die Zelle noch von einem anderen Kreis erreicht werden kann
+       * Falls nein, soll der Kreis stehen bleiben
+       * Falls ja, suche weiter nach einem Feld
+    * Jeder gegangene Zug wird in der Liste `recentMoves` protokolliert und bei Scheitern des Versuchs wieder herausgenommen
+    * Die Berechnung soll parallel zu den anderen Heuristiken stattfinden, d.h. es muss gespeichert werden, an welcher Position
+      welcher Kreis stehen geblieben ist und was schon ausprobiert wurde
+    * In jeder Iteration soll von diesen Kreisen nur ein Schritt getätigt werden, um die Berechnung nicht zu verzögern
+* Neue Heuristik: Finde Regionen mit nur einer Zelle (in diesem Beispiel sind es 2) und finde heraus, welcher Kreis als Einziger
+  die Möglichkeit hat, dort hineinzuspringen
+* Weitere Heuristik: Finde Kreise, die zwangsläufig in einer bestimmten Region landen, egal welchen Zug sie machen und falls bereits
+  ein Kreis in dieser Region liegt, muss er dort heraus
+* Weitere Heuristik: Finde Kreise, die bewegt werden können und damit einem anderen Kreis den Weg abschneiden, woraufhin dieser
+  nur noch eine oder mehr Möglichkeiten hat, sich zu bewegen
+    * Diese restlichen Möglichkeiten müssen geprüft werden und wenn sie zu keinem Ergebnis führen, dann mache den Zug in die
+      Richtung, in der der ursprüngliche Kreis ihm den Weg abgeschnitten hätte
+    * Daraufhin hat der ursprüngliche Kreis auch eine Möglichkeit weniger

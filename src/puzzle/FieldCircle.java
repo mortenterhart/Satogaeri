@@ -35,4 +35,9 @@ public class FieldCircle {
     public boolean hasAnyDistance() {
         return getDistance() == Distance.ANY;
     }
+
+    @Override
+    public String toString() {
+        return "FieldCircle { distance = " + (hasAnyDistance() ? "any" : moveDistance.toIntValue()) + ", invariant = " + isInvariant + " }";
+    }
 }

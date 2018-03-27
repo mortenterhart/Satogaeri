@@ -60,6 +60,35 @@ public class SatogaeriSolver extends Task<Board> {
             // TODO: Each new move will be appended to that list and save the current move in an integer pointer
             // TODO: Iterate over cells and look if there are cells that can only be accessed by one circle
             //       Make these steps then and save them to the history
+
+            System.out.println("Calculating moves for circles in invariant cells\n");
+            for (FieldCircle circle : boardCircles) {
+                Cell fieldCell = inducer.getCellBy(circle);
+                System.out.println("for cell: " + fieldCell);
+                if (!circle.isInvariant() && fieldCell.isInvariant()) {
+                    if (!circle.hasAnyDistance()) {
+                        System.out.println("Cell is invariant, circle not\n");
+                        List<MoveProposal> proposals = new ArrayList<>(4);
+                        for (MoveDirection direction : MoveDirection.values()) {
+                            System.out.println("loop: direction = " + direction);
+                            MoveProposal move = identifyPossibleMove(fieldCell, direction);
+                            if (move != null) {
+                                proposals.add(move);
+                                System.out.println("adding proposal to list");
+                            }
+                        }
+
+                        System.out.println("Possible moves:");
+                        for (MoveProposal proposal : proposals) {
+                            System.out.println(proposal);
+                        }
+                        System.out.println();
+                    }
+                } else {
+                    System.out.println("Circle is invariant or cell not\n");
+                }
+                System.out.println();
+            }
         }
 
     }
@@ -78,6 +107,7 @@ public class SatogaeriSolver extends Task<Board> {
         for (FieldCircle circle : boardCircles) {
             if (circle != null && !inducer.getCellBy(circle).isInvariant() && circle.hasZeroDistance()) {
                 inducer.getRegionBy(circle).setFinal(true);
+                circle.setInvariant(true);
             }
         }
     }
@@ -177,6 +207,8 @@ public class SatogaeriSolver extends Task<Board> {
     }
 
     private MoveProposal identifyPossibleMove(Cell origin, MoveDirection direction) {
+        System.out.println("SatogaeriSolver.identifyPossibleMove");
+        System.out.println("identifying possible move for direction " + direction);
         FieldCircle cellCircle = origin.getCircle();
         int circleDistance = cellCircle.getDistance().toIntValue();
         boolean movePossible = true;
@@ -190,6 +222,7 @@ public class SatogaeriSolver extends Task<Board> {
                         if (pathCell.isVisited()) {
                             movePossible = false;
                         }
+                        System.out.println("loop left");
                     }
 
                     Cell destinationCell = cellBoard.get(moveLeftX, origin.getGridY());
@@ -211,6 +244,7 @@ public class SatogaeriSolver extends Task<Board> {
                         if (pathCell.isVisited()) {
                             movePossible = false;
                         }
+                        System.out.println("loop up");
                     }
 
                     Cell destinationCell = cellBoard.get(origin.getGridX(), moveUpY);
@@ -225,24 +259,30 @@ public class SatogaeriSolver extends Task<Board> {
                 break;
 
             case RIGHT:
+                System.out.println("cell: " + origin);
                 int moveRightX = origin.getGridX() + circleDistance;
+                System.out.println("move field: " + moveRightX);
                 if (moveRightX < cellBoard.getWidth()) {
                     for (int x = origin.getGridX() + 1; x < moveRightX; x++) {
                         Cell pathCell = cellBoard.get(x, origin.getGridY());
                         if (pathCell.isVisited()) {
                             movePossible = false;
                         }
+                        System.out.println("loop right");
                     }
 
                     Cell destinationCell = cellBoard.get(moveRightX, origin.getGridY());
+                    System.out.println(destinationCell);
                     if (destinationCell.isInvariant() || destinationCell.isVisited()) {
                         movePossible = false;
                     }
 
                     if (movePossible) {
+                        System.out.println("move is possible");
                         return new MoveProposal(moveRightX, origin.getGridY(), direction, new Distance(circleDistance));
                     }
                 }
+                System.out.println("right");
                 break;
 
             case DOWN:
@@ -253,6 +293,7 @@ public class SatogaeriSolver extends Task<Board> {
                         if (pathCell.isVisited()) {
                             movePossible = false;
                         }
+                        System.out.println("loop down");
                     }
 
                     Cell destinationCell = cellBoard.get(origin.getGridX(), moveDownY);
