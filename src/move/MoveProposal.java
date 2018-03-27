@@ -1,16 +1,19 @@
 package move;
 
 import puzzle.Distance;
+import puzzle.FieldCircle;
 
 public class MoveProposal {
     private int moveX;
     private int moveY;
+    private FieldCircle movedCircle;
     private MoveDirection direction;
     private Distance movedDistance;
 
-    public MoveProposal(int moveX, int moveY, MoveDirection direction, Distance movedDistance) {
+    public MoveProposal(int moveX, int moveY, FieldCircle movedCircle, MoveDirection direction, Distance movedDistance) {
         this.moveX = moveX;
         this.moveY = moveY;
+        this.movedCircle = movedCircle;
         this.direction = direction;
         this.movedDistance = movedDistance;
     }
@@ -21,6 +24,10 @@ public class MoveProposal {
 
     public int getMoveY() {
         return moveY;
+    }
+
+    public FieldCircle getMovedCircle() {
+        return movedCircle;
     }
 
     public MoveDirection getDirection() {
