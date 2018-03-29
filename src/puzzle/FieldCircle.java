@@ -38,6 +38,6 @@ public class FieldCircle {
 
     @Override
     public String toString() {
-        return "FieldCircle { distance = " + (hasAnyDistance() ? "any" : moveDistance.toIntValue()) + ", invariant = " + isInvariant + " }";
+        return "FieldCircle { distance = " + moveDistance + ", invariant = " + isInvariant + " }";
     }
 }

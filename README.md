@@ -59,3 +59,6 @@ Satogaeri ist ein NP-vollständiges Problem.
     * Diese restlichen Möglichkeiten müssen geprüft werden und wenn sie zu keinem Ergebnis führen, dann mache den Zug in die
       Richtung, in der der ursprüngliche Kreis ihm den Weg abgeschnitten hätte
     * Daraufhin hat der ursprüngliche Kreis auch eine Möglichkeit weniger
+    
+    
+ **Dokumentation der Rundenfunktionen `solelySolutions()` und `lonelyCells()`**

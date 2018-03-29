@@ -30,7 +30,7 @@ public class DirectionMapper {
         throw new InvalidDirectionException("direction " + direction + " is not recognized");
     }
 
-    private int mapRelatedCoordinate(Cell cell) {
+    public int mapRelatedCoordinate(Cell cell) {
         switch (direction) {
             case LEFT:
             case RIGHT:
@@ -90,17 +90,47 @@ public class DirectionMapper {
         throw new InvalidDirectionException("direction " + direction + " is not recognized");
     }
 
-    public Cell mapCellCoordinates(int loopCoordinate, Cell origin) {
+    public Cell mapCellCoordinates(int loopCoordinate, Cell cell) {
         switch (direction) {
             case LEFT:
             case RIGHT:
-                return cellBoard.get(loopCoordinate, origin.getGridY());
+                return cellBoard.get(loopCoordinate, cell.getGridY());
 
             case UP:
             case DOWN:
-                return cellBoard.get(origin.getGridX(), loopCoordinate);
+                return cellBoard.get(cell.getGridX(), loopCoordinate);
         }
 
+        throw new InvalidDirectionException("direction " + direction + " is not recognized");
+    }
+
+    public boolean mapBoardBoundaries(int loopCoordinate) {
+        switch (direction) {
+            case LEFT:
+            case UP:
+                return loopCoordinate >= 0;
+
+            case RIGHT:
+                return loopCoordinate < cellBoard.getWidth();
+
+            case DOWN:
+                return loopCoordinate < cellBoard.getHeight();
+        }
+
+        throw new InvalidDirectionException("direction " + direction + " is not recognized");
+    }
+
+    public int mapAnyDistanceCellLocation(int loopCoordinate) {
+        switch (direction) {
+            case LEFT:
+            case UP:
+                return loopCoordinate + 1;
+
+            case RIGHT:
+            case DOWN:
+                return loopCoordinate - 1;
+        }
+        
         throw new InvalidDirectionException("direction " + direction + " is not recognized");
     }
 

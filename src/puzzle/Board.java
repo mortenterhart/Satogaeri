@@ -57,8 +57,11 @@ public class Board {
         if (posX < 0 || posX >= cellBoard.length ||
                 posY < 0 || posY >= cellBoard[posX].length) {
 
-            throw new IndexOutOfBoundsException("tried to access position (" + posX + ", " +
+            IndexOutOfBoundsException ie = new IndexOutOfBoundsException("tried to access position (" + posX + ", " +
                     posY + ") with board dimension of " + getWidth());
+            System.err.println(ie.getMessage());
+            ie.printStackTrace();
+            throw ie;
         }
     }
 
