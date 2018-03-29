@@ -68,28 +68,9 @@ public class SatogaeriSolver extends Task<Board> {
             // TODO: Iterate over cells and look if there are cells that can only be accessed by one circle
             //       Make these steps then and save them to the history
 
-            /*System.out.println("Circles in invariant regions:");
-            for (FieldCircle circle : boardCircles) {
-                Cell circleCell = inducer.getCellBy(circle);
-                if (!circle.isInvariant() && circleCell.isInvariant()) {
 
-                }
-            }*/
-
-            System.out.println("Calculating possible moves for any distance circles:");
-            for (FieldCircle circle : boardCircles) {
-                if (!circle.isInvariant() && circle.hasAnyDistance()) {
-                    Cell circleCell = inducer.getCellBy(circle);
-                    System.out.println("for cell: " + circleCell);
-                    List<MoveProposal> proposals = anyDistanceMover.identifyAllPossibleMoves(circleCell);
-                    System.out.println("Listing all possible approaches:");
-                    for (MoveProposal move : proposals) {
-                        System.out.println(move);
-                    }
-                }
-            }
+            moveCirclesWithSolelySolution();
         }
-
     }
 
     private boolean allCirclesAreInvariant() {
@@ -102,6 +83,23 @@ public class SatogaeriSolver extends Task<Board> {
         return true;
     }
 
+    private List<MoveProposal> fetchCircleMoves(FieldCircle circle) {
+        checkCircleInvariant(circle);
+
+        Cell circleCell = inducer.getCellBy(circle);
+        if (circle.hasAnyDistance()) {
+            return anyDistanceMover.identifyAllPossibleMoves(circleCell);
+        }
+
+        return determinedDistanceMover.identifyAllPossibleMoves(circleCell);
+    }
+
+    private void checkCircleInvariant(FieldCircle circle) {
+        if (circle.isInvariant()) {
+            throw new IllegalStateException();
+        }
+    }
+
     private void markZeroDistanceCellsInvariant() {
         for (FieldCircle circle : boardCircles) {
             if (circle != null && !inducer.getCellBy(circle).isInvariant() && circle.hasZeroDistance()) {
@@ -111,70 +109,61 @@ public class SatogaeriSolver extends Task<Board> {
         }
     }
 
+    private void markCellsVisited(Cell origin, MoveProposal move) {
+        // Make move and mark all cells on the way as visited
+        int distance = move.getMovedCircle().getDistance().toIntValue();
+        switch (move.getDirection()) {
+            case LEFT:
+                for (int i = origin.getGridX(); i >= origin.getGridX() - distance; i--) {
+                    cellBoard.get(i, origin.getGridY()).setVisited(true);
+                }
+                break;
+
+            case UP:
+                for (int i = origin.getGridY(); i >= origin.getGridY() - distance; i--) {
+                    cellBoard.get(origin.getGridX(), i).setVisited(true);
+                }
+                break;
+
+            case RIGHT:
+                for (int i = origin.getGridX(); i <= origin.getGridX() + distance; i++) {
+                    cellBoard.get(i, origin.getGridY()).setVisited(true);
+                }
+                break;
+
+            case DOWN:
+                for (int i = origin.getGridY(); i <= origin.getGridY() + distance; i++) {
+                    cellBoard.get(origin.getGridX(), i).setVisited(true);
+                }
+                break;
+        }
+    }
+
     private void moveCirclesWithSolelySolution() {
-        int iterationCounter = 0;
         while (hasCirclesWithSolelySolution()) {
             for (FieldCircle circle : boardCircles) {
-                if (circle != null) {
-                    Cell originCell = inducer.getCellBy(circle);
-                    System.out.println("Origin Cell: " + originCell);
-                    if (originCell != null && !circle.hasAnyDistance() && !circle.isInvariant()) {
-                        System.out.println("Calculating moves for " + cellToString(originCell.getGridX(), originCell.getGridY()) + "\n");
-                        List<MoveProposal> possibleMoves = determinedDistanceMover.identifyAllPossibleMoves(originCell);
+                Cell originCell = inducer.getCellBy(circle);
+                if (originCell != null && !circle.hasAnyDistance() && !circle.isInvariant()) {
+                    List<MoveProposal> possibleMoves = determinedDistanceMover.identifyAllPossibleMoves(originCell);
 
-                        System.out.println("\n --- \n");
-
-                        System.out.println("Listing all possible moves for circle on cell (" + originCell.getGridX() + ", " + originCell.getGridY() + ")");
-                        for (MoveProposal proposal : possibleMoves) {
-                            System.out.println(proposal);
-                        }
-
-                        if (possibleMoves.size() == 1) {
-                            System.out.println("Circle on cell (" + originCell.getGridX() + ", " + originCell.getGridY() + ") has only one possible move");
-                            MoveProposal move = possibleMoves.get(0);
-                            Cell destinationCell = cellBoard.get(move.getMoveX(), move.getMoveY());
-                            originCell.detachCircle();
-                            destinationCell.registerCircle(circle);
-                            inducer.getRegionBy(destinationCell).setFinal(true);
-
-                            // New condition: circle becomes invariant
-                            circle.setInvariant(true);
-
-                            // Make move and mark all cells on the way as visited
-                            int distance = circle.getDistance().toIntValue();
-                            switch (move.getDirection()) {
-                                case LEFT:
-                                    for (int i = originCell.getGridX(); i >= originCell.getGridX() - distance; i--) {
-                                        cellBoard.get(i, originCell.getGridY()).setVisited(true);
-                                    }
-                                    break;
-
-                                case UP:
-                                    for (int i = originCell.getGridY(); i >= originCell.getGridY() - distance; i--) {
-                                        cellBoard.get(originCell.getGridX(), i).setVisited(true);
-                                    }
-                                    break;
-
-                                case RIGHT:
-                                    for (int i = originCell.getGridX(); i <= originCell.getGridX() + distance; i++) {
-                                        cellBoard.get(i, originCell.getGridY()).setVisited(true);
-                                    }
-                                    break;
-
-                                case DOWN:
-                                    for (int i = originCell.getGridY(); i <= originCell.getGridY() + distance; i++) {
-                                        cellBoard.get(originCell.getGridX(), i).setVisited(true);
-                                    }
-                                    break;
-                            }
-                        }
+                    if (possibleMoves.size() == 1) {
+                        moveCircle(originCell, possibleMoves.get(0), false);
                     }
                 }
-                System.out.println("\n");
-                cellBoard.printCircles();
             }
-            System.out.println("new iteration: " + iterationCounter);
-            iterationCounter++;
+        }
+    }
+
+    private void moveCircle(Cell origin, MoveProposal move, boolean setInvariant) {
+        FieldCircle movedCircle = move.getMovedCircle();
+        Cell destinationCell = cellBoard.get(move.getMoveX(), move.getMoveY());
+        origin.detachCircle();
+        destinationCell.registerCircle(movedCircle);
+        inducer.getRegionBy(destinationCell).setFinal(true);
+
+        if (setInvariant) {
+            // New condition: circle becomes invariant
+            movedCircle.setInvariant(true);
         }
     }
 
