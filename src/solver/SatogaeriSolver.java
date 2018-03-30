@@ -2,7 +2,8 @@ package solver;
 
 import gui.controller.GuiController;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import logging.LogEngine;
 import main.GUISettings;
@@ -19,10 +20,15 @@ import puzzle.FieldCircle;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SatogaeriSolver extends Task<Board> {
+public class SatogaeriSolver implements Runnable {
     private Board cellBoard;
     private List<FieldCircle> boardCircles;
     private GuiController controller;
+    private volatile boolean isCancelled = false;
+
+    private Button solveButton;
+    private Button resetSimulationButton;
+    private Label statusLabel;
 
     private AssociationInducer inducer;
 
@@ -41,37 +47,41 @@ public class SatogaeriSolver extends Task<Board> {
     }
 
     /**
-     * Invoked when the Task is executed, the call method must be overridden and
-     * implemented by subclasses. The call method actually performs the
-     * background thread logic. Only the updateProgress, updateMessage, updateValue and
-     * updateTitle methods of Task may be called from code within this method.
-     * Any other interaction with the Task from the background thread will result
-     * in runtime exceptions.
+     * When an object implementing interface <code>Runnable</code> is used
+     * to create a thread, starting the thread causes the object's
+     * <code>run</code> method to be called in that separately executing
+     * thread.
+     * <p>
+     * The general contract of the method <code>run</code> is that it may
+     * take any action whatsoever.
      *
-     * @return The result of the background work, if any.
-     * @throws Exception an unhandled exception which occurred during the
-     *                   background operation
+     * @see Thread#run()
      */
-    @Override
-    protected Board call() throws Exception {
+    public void run() {
         findSolution();
 
-        this.exceptionProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                newValue.printStackTrace();
-            }
-        });
-
-        LogEngine.instance.close();
-        return cellBoard;
+        activateResetButton();
+        updateStatus("Simulation found solution and terminated successfully", true);
     }
 
     private void findSolution() {
         markZeroDistanceCellsInvariant();
 
+        if (isCancelled) {
+            return;
+        }
+
         while (hasCirclesWithSolelySolution()) {
             moveCirclesWithSolelySolution();
+
+            if (isCancelled) {
+                return;
+            }
         }
+    }
+
+    public void enableCancelling() {
+        isCancelled = true;
     }
 
     private List<MoveProposal> fetchCircleMoves(FieldCircle circle) {
@@ -97,9 +107,14 @@ public class SatogaeriSolver extends Task<Board> {
             if (circle != null && circle.hasZeroDistance() && !originCell.isInvariant()) {
                 inducer.getRegionBy(circle).setFinal(true);
                 circle.setInvariant(true);
+                updateStatus("Marking zero distance circle " + cellToString(originCell) + " and its region as invariant", false);
                 highlightCircleAttempt(originCell);
                 insertChronologicalMove(new MoveProposal(originCell.getGridX(), originCell.getGridY(),
                         circle, MoveDirection.LEFT, new Distance(0)));
+            }
+
+            if (isCancelled) {
+                return;
             }
         }
     }
@@ -129,6 +144,8 @@ public class SatogaeriSolver extends Task<Board> {
                     LogEngine.instance.log("   destinationCell: " + cellToString(destinationCell));
                     moveCircle(originCell, destinationCell);
                     markCellsVisited(originCell, move);
+                    updateStatus("Moving circle from " + cellToString(originCell) + " to " + cellToString(destinationCell)
+                            + " with distance '" + circle.getDistance().toString() + "' and marking path as visited", false);
 
                     LogEngine.instance.log("   Marking region and circle as invariant");
                     inducer.getRegionBy(destinationCell).setFinal(true);
@@ -136,6 +153,12 @@ public class SatogaeriSolver extends Task<Board> {
 
                     insertChronologicalMove(move);
                 }
+            }
+
+            System.out.println("isCancelled: " + isCancelled);
+
+            if (isCancelled) {
+                return;
             }
 
             cellBoard.printCircles();
@@ -167,29 +190,45 @@ public class SatogaeriSolver extends Task<Board> {
         return false;
     }
 
-    private void highlightCircleAttempt(Cell cell) {
-        if (!cell.isAnyCircleRegistered()) {
-            throw new IllegalStateException("attempting to highlight circle line, but cell " +
-                    cellToString(cell) + " does not contain any circle");
-        }
-
-        Platform.runLater(() -> {
-            controller.highlightCircleLine(cell.getGridX(), cell.getGridY(), GUISettings.circleOutlineColor);
-        });
-
-        waitInterval(GUISettings.circleHighlightingTime);
-    }
-
     private void insertChronologicalMove(MoveProposal move) {
         chronologicalMoves.add(move);
         refreshGUIBoard();
         waitInterval(GUISettings.sleepInterval);
     }
 
-    private void refreshGUIBoard() {
-        Platform.runLater(() -> {
-            controller.drawBoard(cellBoard, chronologicalMoves);
+    private void highlightCircleAttempt(Cell cell) {
+        if (!cell.isAnyCircleRegistered()) {
+            throw new IllegalStateException("attempting to highlight circle line, but cell " +
+                    cellToString(cell) + " does not contain any circle");
+        }
+
+        refreshGUI(() -> {
+            controller.highlightCircleLine(cell.getGridX(), cell.getGridY(), GUISettings.circleOutlineColor);
         });
+
+        waitInterval(GUISettings.circleHighlightingTime);
+    }
+
+    private void updateStatus(String message, boolean markGreen) {
+        refreshGUI(() -> {
+            statusLabel.setText("Status: " + message);
+            statusLabel.setTextFill(Color.BLACK);
+            if (markGreen) {
+                statusLabel.setTextFill(Color.GREEN);
+            }
+        });
+    }
+
+    private void refreshGUIBoard() {
+        refreshGUI(() -> controller.drawBoard(cellBoard, chronologicalMoves));
+    }
+
+    private void activateResetButton() {
+        refreshGUI(() -> resetSimulationButton.setDisable(false));
+    }
+
+    private void refreshGUI(Runnable runnable) {
+        Platform.runLater(runnable);
     }
 
     private void moveCircle(Cell origin, Cell destination) {
@@ -219,7 +258,9 @@ public class SatogaeriSolver extends Task<Board> {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException exception) {
-            exception.printStackTrace();
+            //if (isCancelled()) {
+            //    cancellingRoutine();
+            // }
         }
     }
 
@@ -234,7 +275,23 @@ public class SatogaeriSolver extends Task<Board> {
     }
 
     private String cellToString(Cell cell) {
-        return "(" + cell.getGridX() + ", " + cell.getGridY() + ")";
+        if (cell != null) {
+            return "[" + cell.getGridX() + ", " + cell.getGridY() + "]";
+        }
+
+        return null;
     }
 
+    public void setControlButtons(Button solveButton, Button resetSimulationButton) {
+        this.solveButton = solveButton;
+        this.resetSimulationButton = resetSimulationButton;
+    }
+
+    public void setStatusLabel(Label statusLabel) {
+        this.statusLabel = statusLabel;
+    }
+
+    public boolean isCancelled() {
+        return isCancelled;
+    }
 }

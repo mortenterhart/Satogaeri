@@ -13,4 +13,6 @@ public interface ICircleMover {
     void checkOriginCircle(Cell origin);
 
     boolean isDistinctMove(Cell originCell, MoveProposal proposal);
+
+    void close();
 }

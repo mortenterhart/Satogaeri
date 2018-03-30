@@ -12,6 +12,7 @@ import java.util.Objects;
 
 public class AnyDistanceCircleMover implements ICircleMover {
     private Board cellBoard;
+    private boolean isClosed;
 
     public AnyDistanceCircleMover(Board cellBoard) {
         Objects.requireNonNull(cellBoard);
@@ -19,6 +20,9 @@ public class AnyDistanceCircleMover implements ICircleMover {
     }
 
     public List<MoveProposal> identifyAllPossibleMoves(Cell origin) {
+        if (isClosed) {
+            return null;
+        }
         checkOriginCircle(origin);
 
         List<MoveProposal> possibleMoves = new ArrayList<>(4);
@@ -41,6 +45,10 @@ public class AnyDistanceCircleMover implements ICircleMover {
     }
 
     public MoveProposal identifyPossibleMove(Cell origin, MoveDirection direction) {
+        if (isClosed) {
+            return null;
+        }
+
         DirectionMapper mapper = new DirectionMapper(direction, cellBoard);
         FieldCircle cellCircle = origin.getCircle();
         int foundCellIndex = -1;
@@ -91,6 +99,10 @@ public class AnyDistanceCircleMover implements ICircleMover {
 
     @Override
     public boolean isDistinctMove(Cell originCell, MoveProposal proposal) {
+        if (isClosed) {
+            return false;
+        }
+
         DirectionMapper mapper = new DirectionMapper(proposal.getDirection(), cellBoard);
         Cell destinationCell = cellBoard.get(proposal.getMoveX(), proposal.getMoveY());
         int destinationIndex = mapper.mapRelatedCoordinate(destinationCell);
@@ -119,5 +131,9 @@ public class AnyDistanceCircleMover implements ICircleMover {
         if (!origin.getCircle().hasAnyDistance()) {
             throw new IllegalStateException("registered circle in cell " + origin + " has a determined distance");
         }
+    }
+
+    public void close() {
+        isClosed = true;
     }
 }

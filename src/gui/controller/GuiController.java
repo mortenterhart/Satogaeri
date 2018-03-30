@@ -1,12 +1,14 @@
 package gui.controller;
 
+import javafx.application.HostServices;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -14,7 +16,13 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import logging.LogEngine;
 import main.AlgorithmParameters;
+import main.Configuration;
 import main.GUISettings;
 import move.MoveProposal;
 import puzzle.Board;
@@ -31,6 +39,11 @@ public class GuiController {
     private Board cellBoard;
     private IndexExpander expander;
 
+    private SatogaeriSolver solverTask;
+
+    private Stage mainStage;
+    private HostServices hostServices;
+
     @FXML
     private GridPane gridPane;
 
@@ -38,41 +51,159 @@ public class GuiController {
     private Button solveButton;
 
     @FXML
-    private Button resetButton;
+    private Button resetSimulationButton;
+
+    @FXML
+    private Button closeButton;
+
+    @FXML
+    private Button resetMoveSliderButton;
+
+    @FXML
+    private Button resetTriggerTimeButton;
+
+    @FXML
+    private Button resetColorsButton;
+
+    @FXML
+    private Slider triggerTimeSlider;
+
+    @FXML
+    private Slider moveTimeSlider;
+
+    @FXML
+    private ColorPicker invariantColorSelector;
+
+    @FXML
+    private ColorPicker triggeringColorSelector;
+
+    @FXML
+    private Rectangle invariantCellColorReference;
+
+    @FXML
+    private Circle triggeringCellColorReference;
+
+    @FXML
+    private Label statusLabel;
+
+    @FXML
+    private Hyperlink informationLink;
 
     @FXML
     private void initialize() {
         gridPane.setGridLinesVisible(false);
         solveButton.setOnAction(event -> launchSolver());
-        resetButton.setOnAction(event -> resetBoard());
-        resetButton.setDisable(true);
+        resetSimulationButton.setOnAction(event -> resetBoard());
+        closeButton.setOnAction(event -> mainStage.fireEvent(new WindowEvent(mainStage, WindowEvent.WINDOW_CLOSE_REQUEST)));
+        resetSimulationButton.setDisable(true);
 
         cellBoard = new Board(AlgorithmParameters.instance.boardDimension);
         expander = new IndexExpander(cellBoard.getWidth());
         PuzzleInitializer initializer = new PuzzleInitializer(gridPane, cellBoard);
         initializer.setup();
+
+        observeColorSelectors();
+        observeTimeSliders();
+        addActionsToResetButtons();
+        addHyperlinkEvent();
+    }
+
+    private void observeColorSelectors() {
+        invariantCellColorReference.setFill(GUISettings.invariantRegionColor);
+        invariantColorSelector.setValue(GUISettings.invariantRegionColor);
+        invariantColorSelector.valueProperty().addListener(new ChangeListener<Color>() {
+            @Override
+            public void changed(ObservableValue<? extends Color> observable, Color oldValue, Color newValue) {
+                GUISettings.setInvariantRegionColor(newValue);
+                invariantCellColorReference.setFill(newValue);
+            }
+        });
+
+        triggeringCellColorReference.setStroke(GUISettings.circleOutlineColor);
+        triggeringColorSelector.setValue(GUISettings.circleOutlineColor);
+        triggeringColorSelector.valueProperty().addListener(new ChangeListener<Color>() {
+            @Override
+            public void changed(ObservableValue<? extends Color> observable, Color oldValue, Color newValue) {
+                GUISettings.setCircleOutlineColor(newValue);
+                triggeringCellColorReference.setStroke(newValue);
+            }
+        });
+
+    }
+
+    private void observeTimeSliders() {
+        moveTimeSlider.setValue(GUISettings.sleepInterval);
+        moveTimeSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                GUISettings.setSleepInterval(newValue.longValue());
+            }
+        });
+
+        triggerTimeSlider.setValue(GUISettings.circleHighlightingTime);
+        triggerTimeSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                GUISettings.setCircleHighlightingTime(newValue.longValue());
+            }
+        });
+    }
+
+    private void addActionsToResetButtons() {
+        resetMoveSliderButton.setOnAction(event -> {
+            GUISettings.resetSleepInterval();
+            moveTimeSlider.setValue(GUISettings.sleepInterval);
+        });
+
+        resetTriggerTimeButton.setOnAction(event -> {
+            GUISettings.resetCircleHighlightingTime();
+            triggerTimeSlider.setValue(GUISettings.circleHighlightingTime);
+        });
+
+        resetColorsButton.setOnAction(event -> {
+            GUISettings.resetInvariantRegionColor();
+            invariantColorSelector.setValue(GUISettings.invariantRegionColor);
+            GUISettings.resetCircleOutlineColor();
+            triggeringColorSelector.setValue(GUISettings.circleOutlineColor);
+        });
+    }
+
+    private void addHyperlinkEvent() {
+        informationLink.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                hostServices.showDocument(Configuration.instance.informationHyperlinkURL);
+            }
+        });
+    }
+
+    public void enableTaskCancelling() {
+        mainStage.setOnCloseRequest(event -> {
+            mainStage.close();
+            if (solverTask != null && !solverTask.isCancelled()) {
+                LogEngine.instance.log("cancelling task");
+                solverTask.enableCancelling();
+            }
+        });
     }
 
     @FXML
     private void launchSolver() {
-        SatogaeriSolver solver = new SatogaeriSolver(cellBoard);
-        solver.setController(this);
-        solver.valueProperty().addListener(new ChangeListener<Board>() {
-            @Override
-            public void changed(ObservableValue<? extends Board> observable, Board oldValue, Board newValue) {
-                System.out.println("Value of board changed");
-            }
-        });
+        solveButton.setDisable(true);
 
-        ExecutorService service = Executors.newCachedThreadPool();
-        service.submit(solver);
+        solverTask = new SatogaeriSolver(cellBoard);
+        solverTask.setController(this);
+        solverTask.setControlButtons(solveButton, resetSimulationButton);
+        solverTask.setStatusLabel(statusLabel);
+
+        ExecutorService solverService = Executors.newCachedThreadPool();
+        solverService.submit(solverTask);
     }
 
     @FXML
     private void resetBoard() {
-        for (Node child : gridPane.getChildren()) {
-            gridPane.getChildren().remove(child);
-        }
+        solveButton.setDisable(false);
+        gridPane.getChildren().clear();
 
         initialize();
     }
@@ -225,7 +356,6 @@ public class GuiController {
         StackPane circlePane = getStackPaneAt(x, y);
 
         Circle registeredCircle = getCircleFromStackPane(circlePane);
-        System.out.println("registeredCircle: " + registeredCircle);
         if (registeredCircle != null) {
             registeredCircle.setStroke(color);
         }
@@ -239,5 +369,13 @@ public class GuiController {
         }
 
         return null;
+    }
+
+    public void setMainStage(Stage mainStage) {
+        this.mainStage = mainStage;
+    }
+
+    public void setHostServices(HostServices hostServices) {
+        this.hostServices = hostServices;
     }
 }

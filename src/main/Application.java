@@ -1,5 +1,6 @@
 package main;
 
+import gui.controller.GuiController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -17,17 +18,18 @@ public class Application extends javafx.application.Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        primaryStage.setTitle("Logic Puzzle Satogaeri by Nikoli");
+        primaryStage.setTitle("Logic Puzzle " + Configuration.instance.projectName + " by Nikoli");
         primaryStage.setResizable(false);
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(GUISettings.fxmlPackagePath));
         Pane rootElement = loader.load();
+        GuiController controller = loader.getController();
+        controller.setMainStage(primaryStage);
+        controller.setHostServices(getHostServices());
+        controller.enableTaskCancelling();
+
         Scene windowScene = new Scene(rootElement);
         primaryStage.setScene(windowScene);
-
-        primaryStage.setOnCloseRequest(event -> {
-            primaryStage.close();
-        });
 
         primaryStage.show();
     }

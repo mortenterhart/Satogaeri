@@ -10,14 +10,17 @@ public class GUISettings {
     public static final double gridCellHeight = 45;
     public static final int distanceLabelFontSize = 20;
 
-    public static Color circleOutlineColor = Color.YELLOW;
-    public static Color invariantRegionColor = Color.GREENYELLOW;
+    private static final Color defaultCircleOutlineColor = Color.YELLOW;
+    private static final Color defaultInvariantRegionColor = Color.GREENYELLOW;
+
+    public static Color circleOutlineColor = defaultCircleOutlineColor;
+    public static Color invariantRegionColor = defaultInvariantRegionColor;
 
     private static final long defaultSleepInterval = 1000L;
-    private static final long defaultCircleHighligtingTime = 500L;
+    private static final long defaultCircleHighlightingTime = 500L;
 
     public static long sleepInterval = defaultSleepInterval;
-    public static long circleHighlightingTime = defaultCircleHighligtingTime;
+    public static long circleHighlightingTime = defaultCircleHighlightingTime;
 
     public static void setSleepInterval(long interval) {
         sleepInterval = interval;
@@ -32,6 +35,22 @@ public class GUISettings {
     }
 
     public static void resetCircleHighlightingTime() {
-        circleHighlightingTime = defaultCircleHighligtingTime;
+        circleHighlightingTime = defaultCircleHighlightingTime;
+    }
+
+    public static void setCircleOutlineColor(Color outlineColor) {
+        circleOutlineColor = outlineColor;
+    }
+
+    public static void resetCircleOutlineColor() {
+        circleOutlineColor = defaultCircleOutlineColor;
+    }
+
+    public static void setInvariantRegionColor(Color regionColor) {
+        invariantRegionColor = regionColor;
+    }
+
+    public static void resetInvariantRegionColor() {
+        invariantRegionColor = defaultInvariantRegionColor;
     }
 }
