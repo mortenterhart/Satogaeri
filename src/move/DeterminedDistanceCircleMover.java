@@ -38,7 +38,7 @@ public class DeterminedDistanceCircleMover implements ICircleMover {
 
         if (mapper.mapBoardBoundaries(nextMovePosition)) {
             for (int i = mapper.mapRelatedCoordinateWithStep(origin);
-                 mapper.mapMoveCondition(i, nextMovePosition) && movePossible;
+                 mapper.mapMoveConditionExclusive(i, nextMovePosition) && movePossible;
                  i += mapper.mapLoopStep()) {
 
                 Cell pathCell = mapper.mapCellCoordinates(i, origin);
@@ -59,6 +59,11 @@ public class DeterminedDistanceCircleMover implements ICircleMover {
         }
 
         return null;
+    }
+
+    @Override
+    public boolean isDistinctMove(Cell originCell, MoveProposal proposal) {
+        return true;
     }
 
     public void checkOriginCircle(Cell origin) {

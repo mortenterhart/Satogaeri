@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class AnyDistanceICircleMover implements ICircleMover {
+public class AnyDistanceCircleMover implements ICircleMover {
     private Board cellBoard;
 
-    public AnyDistanceICircleMover(Board cellBoard) {
+    public AnyDistanceCircleMover(Board cellBoard) {
         Objects.requireNonNull(cellBoard);
         this.cellBoard = cellBoard;
     }
@@ -45,30 +45,40 @@ public class AnyDistanceICircleMover implements ICircleMover {
         FieldCircle cellCircle = origin.getCircle();
         int foundCellIndex = -1;
 
+        System.out.println("direction " + direction.name());
         int indexOffset = mapper.mapRelatedCoordinateWithStep(origin);
+        System.out.println("indexOffset: " + indexOffset);
         if (mapper.mapBoardBoundaries(indexOffset)) {
-            Cell pathCell = mapper.mapCellCoordinates(indexOffset, origin);
-            while (pathCell != null && !pathCell.isVisited() && mapper.mapBoardBoundaries(indexOffset)) {
-                foundCellIndex = indexOffset;
-                indexOffset += mapper.mapLoopStep();
-                if (mapper.mapBoardBoundaries(indexOffset)) {
-                    pathCell = mapper.mapCellCoordinates(indexOffset, origin);
+            System.out.println("indexOffset is in board boundaries");
+            Cell pathCell;
+            while (mapper.mapBoardBoundaries(indexOffset)) {
+                pathCell = mapper.mapCellCoordinates(indexOffset, origin);
+                if (pathCell.isVisited()) {
+                    break;
+                } else if (!pathCell.isInvariant()) {
+                    foundCellIndex = indexOffset;
+                    break;
                 }
+
+                indexOffset += mapper.mapLoopStep();
             }
         }
 
         if (foundCellIndex >= 0) {
             Cell destinationCell = mapper.mapCellCoordinates(foundCellIndex, origin);
             if (destinationCell.isInvariant()) {
+                System.out.println("destinationCell is invariant");
                 while (destinationCell.isInvariant() && !destinationCell.isVisited() && mapper.mapBoardBoundaries(foundCellIndex)) {
                     foundCellIndex -= mapper.mapLoopStep();
                     destinationCell = mapper.mapCellCoordinates(foundCellIndex, destinationCell);
+                    System.out.println("next destinationCell: " + destinationCell);
                 }
 
                 if (destinationCell == origin) {
                     destinationCell = null;
                 }
             }
+            System.out.println("destinationCell: " + destinationCell);
 
             if (destinationCell != null) {
                 return new MoveProposal(destinationCell.getGridX(), destinationCell.getGridY(),
@@ -77,6 +87,27 @@ public class AnyDistanceICircleMover implements ICircleMover {
         }
 
         return null;
+    }
+
+    @Override
+    public boolean isDistinctMove(Cell originCell, MoveProposal proposal) {
+        DirectionMapper mapper = new DirectionMapper(proposal.getDirection(), cellBoard);
+        Cell destinationCell = cellBoard.get(proposal.getMoveX(), proposal.getMoveY());
+        int destinationIndex = mapper.mapRelatedCoordinate(destinationCell);
+        int numberFreeCells = 0;
+
+        for (int i = mapper.mapRelatedCoordinateWithStep(originCell);
+             mapper.mapMoveConditionInclusive(i, destinationIndex) && mapper.mapBoardBoundaries(i);
+             i += mapper.mapLoopStep()) {
+
+            Cell pathCell = mapper.mapCellCoordinates(i, originCell);
+            if (!pathCell.isVisited() && !pathCell.isInvariant()) {
+                numberFreeCells++;
+            }
+
+        }
+
+        return originCell == destinationCell || numberFreeCells == 1;
     }
 
     public void checkOriginCircle(Cell origin) {

@@ -86,10 +86,10 @@ public class Board {
             for (int x = 0; x < getHeight(); x++) {
                 Cell currentCell = get(x, y);
                 if (currentCell.isAnyCircleRegistered()) {
-                    if (currentCell.getCircle().getDistance().toIntValue() >= 0) {
+                    if (!currentCell.getCircle().hasAnyDistance()) {
                         System.out.print(currentCell.getCircle().getDistance().toIntValue() + " ");
                     } else {
-                        System.out.print("O ");
+                        System.out.print("@ ");
                     }
                 } else if (currentCell.isVisited()) {
                     System.out.print("- ");

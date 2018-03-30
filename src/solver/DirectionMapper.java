@@ -1,6 +1,7 @@
 package solver;
 
 import move.MoveDirection;
+import move.MoveProposal;
 import puzzle.Board;
 import puzzle.Cell;
 
@@ -48,21 +49,7 @@ public class DirectionMapper {
         return mapRelatedCoordinate(cell) + mapLoopStep();
     }
 
-    public boolean isMoveInsideBoundaries(int nextMovePosition, int boardWidth, int boardHeight) {
-        switch (direction) {
-            case LEFT:
-            case RIGHT:
-                return nextMovePosition >= 0 && nextMovePosition < boardWidth;
-
-            case UP:
-            case DOWN:
-                return nextMovePosition >= 0 && nextMovePosition < boardHeight;
-        }
-
-        throw new InvalidDirectionException("direction " + direction + " is not recognized");
-    }
-
-    public boolean mapMoveCondition(int loopCoordinate, int nextMovePosition) {
+    public boolean mapMoveConditionExclusive(int loopCoordinate, int nextMovePosition) {
         switch (direction) {
             case LEFT:
             case UP:
@@ -71,6 +58,20 @@ public class DirectionMapper {
             case RIGHT:
             case DOWN:
                 return loopCoordinate < nextMovePosition;
+        }
+
+        throw new InvalidDirectionException("direction " + direction + " is not recognized");
+    }
+
+    public boolean mapMoveConditionInclusive(int loopCoordinate, int nextMovePosition) {
+        switch (direction) {
+            case LEFT:
+            case UP:
+                return loopCoordinate >= nextMovePosition;
+
+            case RIGHT:
+            case DOWN:
+                return loopCoordinate <= nextMovePosition;
         }
 
         throw new InvalidDirectionException("direction " + direction + " is not recognized");
