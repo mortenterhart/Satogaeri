@@ -38,9 +38,14 @@ public class GuiController {
     private Button solveButton;
 
     @FXML
+    private Button resetButton;
+
+    @FXML
     private void initialize() {
         gridPane.setGridLinesVisible(false);
         solveButton.setOnAction(event -> launchSolver());
+        resetButton.setOnAction(event -> resetBoard());
+        resetButton.setDisable(true);
 
         cellBoard = new Board(AlgorithmParameters.instance.boardDimension);
         expander = new IndexExpander(cellBoard.getWidth());
@@ -61,6 +66,15 @@ public class GuiController {
 
         ExecutorService service = Executors.newCachedThreadPool();
         service.submit(solver);
+    }
+
+    @FXML
+    private void resetBoard() {
+        for (Node child : gridPane.getChildren()) {
+            gridPane.getChildren().remove(child);
+        }
+
+        initialize();
     }
 
     public void drawBoard(Board cellBoard, List<MoveProposal> chronologicalMoves) {
@@ -185,7 +199,7 @@ public class GuiController {
 
                 if (currentCell.isInvariant()) {
                     Rectangle invariantColorLayer = new Rectangle(GUISettings.gridCellWidth, GUISettings.gridCellHeight);
-                    invariantColorLayer.setFill(Color.web("#1eff3e"));
+                    invariantColorLayer.setFill(GUISettings.invariantRegionColor);
 
                     cellPane.getChildren().add(invariantColorLayer);
                 }
@@ -205,5 +219,25 @@ public class GuiController {
 
     private StackPane getStackPaneAt(int x, int y) {
         return (StackPane) gridPane.getChildren().get(expander.expand(x, y));
+    }
+
+    public void highlightCircleLine(int x, int y, Color color) {
+        StackPane circlePane = getStackPaneAt(x, y);
+
+        Circle registeredCircle = getCircleFromStackPane(circlePane);
+        System.out.println("registeredCircle: " + registeredCircle);
+        if (registeredCircle != null) {
+            registeredCircle.setStroke(color);
+        }
+    }
+
+    private Circle getCircleFromStackPane(StackPane pane) {
+        for (Node child : pane.getChildren()) {
+            if (child instanceof Circle) {
+                return (Circle) child;
+            }
+        }
+
+        return null;
     }
 }
