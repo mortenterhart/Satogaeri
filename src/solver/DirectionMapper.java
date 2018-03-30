@@ -1,7 +1,7 @@
 package solver;
 
+import javafx.geometry.Pos;
 import move.MoveDirection;
-import move.MoveProposal;
 import puzzle.Board;
 import puzzle.Cell;
 
@@ -131,11 +131,61 @@ public class DirectionMapper {
             case DOWN:
                 return loopCoordinate - 1;
         }
-        
+
         throw new InvalidDirectionException("direction " + direction + " is not recognized");
     }
 
-    private static class InvalidDirectionException extends RuntimeException {
+    public Pos mapRectangleOrientation() {
+        switch (direction) {
+            case LEFT:
+                return Pos.CENTER_LEFT;
+
+            case UP:
+                return Pos.TOP_CENTER;
+
+            case RIGHT:
+                return Pos.CENTER_RIGHT;
+
+            case DOWN:
+                return Pos.BOTTOM_CENTER;
+        }
+
+        throw new InvalidDirectionException("direction " + direction + " is not recognized");
+    }
+
+    public Pos mapRectangleOrientationInverted() {
+        switch (direction) {
+            case LEFT:
+                return Pos.CENTER_RIGHT;
+
+            case UP:
+                return Pos.BOTTOM_CENTER;
+
+            case RIGHT:
+                return Pos.CENTER_LEFT;
+
+            case DOWN:
+                return Pos.TOP_CENTER;
+        }
+
+        throw new InvalidDirectionException("direction " + direction + " is not recognized");
+    }
+
+    public double mapRectangleRotation() {
+        switch (direction) {
+            case LEFT:
+            case RIGHT:
+                return 0.0;
+
+            case UP:
+            case DOWN:
+                return 90.0;
+        }
+
+        throw new InvalidDirectionException("direction " + direction + " is not recognized");
+    }
+
+    public static class InvalidDirectionException extends RuntimeException {
 
         public InvalidDirectionException(String message) {
             super(message);

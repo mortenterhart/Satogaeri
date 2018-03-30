@@ -3,6 +3,7 @@ package solver;
 import gui.controller.GuiController;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import main.GUISettings;
 import move.*;
 import puzzle.Board;
 import puzzle.Cell;
@@ -198,12 +199,12 @@ public class SatogaeriSolver extends Task<Board> {
                         System.out.println("   destinationCell: " + cellToString(destinationCell));
                         moveCircle(originCell, destinationCell);
                         markCellsVisited(originCell, move);
-                        insertChronologicalMove(move);
-                        waitInterval(500);
 
                         System.out.println("   Marking region and circle as invariant");
                         inducer.getRegionBy(destinationCell).setFinal(true);
                         circle.setInvariant(true);
+
+                        insertChronologicalMove(move);
                     }
                 }
 
@@ -232,6 +233,7 @@ public class SatogaeriSolver extends Task<Board> {
         chronologicalMoves.add(move);
         movePointer++;
         refreshGUIBoard();
+        waitInterval(GUISettings.sleepInterval);
     }
 
     private void refreshGUIBoard() {

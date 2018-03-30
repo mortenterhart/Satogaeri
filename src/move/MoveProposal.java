@@ -8,14 +8,14 @@ public class MoveProposal {
     private int moveY;
     private FieldCircle movedCircle;
     private MoveDirection direction;
-    private Distance movedDistance;
+    private Distance distance;
 
-    public MoveProposal(int moveX, int moveY, FieldCircle movedCircle, MoveDirection direction, Distance movedDistance) {
+    public MoveProposal(int moveX, int moveY, FieldCircle movedCircle, MoveDirection direction, Distance distance) {
         this.moveX = moveX;
         this.moveY = moveY;
         this.movedCircle = movedCircle;
         this.direction = direction;
-        this.movedDistance = movedDistance;
+        this.distance = distance;
     }
 
     public int getMoveX() {
@@ -34,12 +34,12 @@ public class MoveProposal {
         return direction;
     }
 
-    public Distance getMovedDistance() {
-        return movedDistance;
+    public Distance getDistance() {
+        return distance;
     }
 
     @Override
     public String toString() {
-        return "Move to (" + moveX + ", " + moveY + ") into direction " + direction.name() + " with distance " + movedDistance;
+        return "Move to (" + moveX + ", " + moveY + ") into direction " + direction.name() + " with distance " + distance;
     }
 }
