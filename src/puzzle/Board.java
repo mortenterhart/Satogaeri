@@ -1,5 +1,7 @@
 package puzzle;
 
+import logging.LogEngine;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +32,7 @@ public class Board {
         for (int y = 0; y < getWidth(); y++) {
             for (int x = 0; x < getHeight(); x++) {
                 Cell currentCell = cellBoard[x][y];
-                if (currentCell != null && currentCell.isAnyCircleRegistered()) {
+                if (currentCell != null && currentCell.hasAnyCircleRegistered()) {
                     boardCircles.add(currentCell.getCircle());
                 }
             }
@@ -57,11 +59,8 @@ public class Board {
         if (posX < 0 || posX >= cellBoard.length ||
                 posY < 0 || posY >= cellBoard[posX].length) {
 
-            IndexOutOfBoundsException ie = new IndexOutOfBoundsException("tried to access position (" + posX + ", " +
+            throw new IndexOutOfBoundsException("tried to access position (" + posX + ", " +
                     posY + ") with board dimension of " + getWidth());
-            System.err.println(ie.getMessage());
-            ie.printStackTrace();
-            throw ie;
         }
     }
 
@@ -69,47 +68,49 @@ public class Board {
         return containedRegions;
     }
 
-    public void printCircles() {
-        System.out.println("Cell Board with circle movements:");
-        System.out.print("    ");
-        for (int y = 0; y < getWidth(); y++) {
-            System.out.print(String.valueOf(y).concat(" "));
-        }
-        System.out.print("\n  +-");
-        for (int y = 0; y < getWidth(); y++){
-            System.out.print("--");
-        }
-        System.out.println();
+    public void dumpCellBoard() {
+        LogEngine.instance.logln("Cell Board with circle movements:");
 
+        printHeader();
         for (int y = 0; y < getWidth(); y++) {
-            System.out.print(String.valueOf(y).concat(" | "));
+            LogEngine.instance.log(String.valueOf(y).concat(" | "));
             for (int x = 0; x < getHeight(); x++) {
                 Cell currentCell = get(x, y);
-                if (currentCell.isAnyCircleRegistered()) {
+                if (currentCell.hasAnyCircleRegistered()) {
                     if (!currentCell.getCircle().hasAnyDistance()) {
-                        System.out.print(currentCell.getCircle().getDistance().toIntValue() + " ");
+                        LogEngine.instance.log(currentCell.getCircle().getDistance().toIntValue() + " ", false);
                     } else {
-                        System.out.print("@ ");
+                        LogEngine.instance.log("@ ", false);
                     }
                 } else if (currentCell.isVisited()) {
-                    System.out.print("- ");
+                    LogEngine.instance.log("- ", false);
                 } else if (currentCell.isInvariant()) {
-                    System.out.print("X ");
+                    LogEngine.instance.log("X ", false);
                 } else {
-                    System.out.print(". ");
+                    LogEngine.instance.log(". ", false);
                 }
             }
-            System.out.println();
+            LogEngine.instance.newLine(false);
         }
-        System.out.println("\n\n");
+        LogEngine.instance.newLine(true);
+        LogEngine.instance.logln("[0-9]  cell with determined distance");
+        LogEngine.instance.logln("@      cell with any distance");
+        LogEngine.instance.logln("-      visited cell");
+        LogEngine.instance.logln("X      invariant cell");
+        LogEngine.instance.logln(".      free cell\n");
     }
 
-    public void print() {
+    private void printHeader() {
+        LogEngine.instance.log("    ");
         for (int y = 0; y < getWidth(); y++) {
-            for (int x = 0; x < getHeight(); x++) {
-                System.out.println("Indices           (" + x + ", " + y + ")");
-                System.out.println("Cell Coordinates: (" + get(x, y).getGridX() + ", " + get(x, y).getGridY() + ")");
-            }
+            LogEngine.instance.log(String.valueOf(y).concat(" "), false);
         }
+
+        LogEngine.instance.newLine(false);
+        LogEngine.instance.log("  +-");
+        for (int y = 0; y < getWidth(); y++) {
+            LogEngine.instance.log("--", false);
+        }
+        LogEngine.instance.newLine(false);
     }
 }

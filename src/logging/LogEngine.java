@@ -39,14 +39,34 @@ public enum LogEngine {
      *
      * @param message the message
      */
-    public void write(String message) {
+    public void write(String message, boolean appendDatePrefix) {
         try {
-            String datePrefix = "[" + dateFormat.format(new Date()) + "]: ";
-            writer.write(datePrefix + message.replaceAll("\n", "\n" + datePrefix) +
-                    Configuration.instance.lineSeparator);
+            if (appendDatePrefix) {
+                String datePrefix = "[" + dateFormat.format(new Date()) + "]:  ";
+                writer.write(datePrefix + message);
+            } else {
+                writer.write(message);
+            }
+
             writer.flush();
         } catch (IOException ioe) {
-            System.err.println("Fatal Error occurred during logging: IO Error (see the stacktrace)");
+            ioe.getMessage();
+            ioe.printStackTrace();
+        }
+    }
+
+    public void writeLine(String message, boolean appendDatePrefix) {
+        try {
+            if (appendDatePrefix) {
+                String datePrefix = "[" + dateFormat.format(new Date()) + "]:  ";
+                writer.write(datePrefix + message + Configuration.instance.lineSeparator);
+            } else {
+                writer.write(message + Configuration.instance.lineSeparator);
+            }
+
+            writer.flush();
+        } catch (IOException ioe) {
+            ioe.getMessage();
             ioe.printStackTrace();
         }
     }
@@ -54,33 +74,33 @@ public enum LogEngine {
     /**
      * Logs a message to the log file and the standard output.
      *
-     * @param message the message
+     * @param message          the message
+     * @param appendDatePrefix true if date prefix should be appended,
+     *                         false otherwise
      */
+    public void log(String message, boolean appendDatePrefix) {
+        write(message, appendDatePrefix);
+        System.out.print(message);
+    }
+
     public void log(String message) {
-        write(message);
+        log(message, true);
+    }
+
+    public void logln(String message, boolean appendDatePrefix) {
+        writeLine(message, appendDatePrefix);
         System.out.println(message);
     }
 
-    public void log(Object object) {
-        log(object.toString());
-    }
-
-    public void logError(String message) {
-        write(message);
-        System.err.println(message);
-    }
-
-    public void logLine() {
-        newLine();
-        log(" --------------");
-        newLine();
+    public void logln(String message) {
+        logln(message, true);
     }
 
     /**
      * Writes a new line in the log file and on standard output.
      */
-    public void newLine() {
-        write("");
+    public void newLine(boolean appendDatePrefix) {
+        write("\n", appendDatePrefix);
         System.out.println();
     }
 

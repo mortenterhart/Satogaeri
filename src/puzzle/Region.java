@@ -16,7 +16,7 @@ public class Region {
     }
 
     public int getNumberOfCircles() {
-        return (int) cells.stream().filter(Cell::isAnyCircleRegistered).count();
+        return (int) cells.stream().filter(Cell::hasAnyCircleRegistered).count();
     }
 
     public boolean containsCell(int[] cellCoordinates) {
@@ -34,7 +34,7 @@ public class Region {
 
     public boolean contains(FieldCircle circle) {
         for (Cell regionCell : cells) {
-            if (regionCell != null && regionCell.isAnyCircleRegistered() &&
+            if (regionCell != null && regionCell.hasAnyCircleRegistered() &&
                     regionCell.getCircle() == circle) {
                 return true;
             }
@@ -43,16 +43,16 @@ public class Region {
         return false;
     }
 
+    public boolean isFinal() {
+        return isFinal;
+    }
+
     public void setFinal(boolean isFinal) {
         this.isFinal = isFinal;
 
         for (Cell regionCell : cells) {
             regionCell.setInvariant(isFinal);
         }
-    }
-
-    public boolean isFinal() {
-        return isFinal;
     }
 
     @Override

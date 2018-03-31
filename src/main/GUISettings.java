@@ -12,13 +12,10 @@ public class GUISettings {
 
     private static final Color defaultCircleOutlineColor = Color.YELLOW;
     private static final Color defaultInvariantRegionColor = Color.GREENYELLOW;
-
-    public static Color circleOutlineColor = defaultCircleOutlineColor;
-    public static Color invariantRegionColor = defaultInvariantRegionColor;
-
     private static final long defaultSleepInterval = 1000L;
     private static final long defaultCircleHighlightingTime = 500L;
-
+    public static Color circleOutlineColor = defaultCircleOutlineColor;
+    public static Color invariantRegionColor = defaultInvariantRegionColor;
     public static long sleepInterval = defaultSleepInterval;
     public static long circleHighlightingTime = defaultCircleHighlightingTime;
 

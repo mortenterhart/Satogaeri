@@ -12,6 +12,11 @@ public class Cell {
         gridY = columnIndex;
     }
 
+    public Cell(int rowIndex, int columnIndex, FieldCircle circle) {
+        this(rowIndex, columnIndex);
+        attachedCircle = circle;
+    }
+
     public void registerCircle(FieldCircle circle) {
         attachedCircle = circle;
     }
@@ -48,7 +53,7 @@ public class Cell {
         return gridY;
     }
 
-    public boolean isAnyCircleRegistered() {
+    public boolean hasAnyCircleRegistered() {
         return attachedCircle != null;
     }
 
@@ -59,7 +64,7 @@ public class Cell {
     @Override
     public String toString() {
         return "Cell { x = " + gridX + ", y = " + gridY + ", visited = " + isVisited + ", invariant = " + isInvariant +
-                ", circleRegistered = " + (isAnyCircleRegistered() ? "yes, circle = " + attachedCircle : "no") + " }";
+                ", circleRegistered = " + (hasAnyCircleRegistered() ? "yes, circle = " + attachedCircle : "no") + " }";
     }
 
 }

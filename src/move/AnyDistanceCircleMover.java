@@ -27,7 +27,7 @@ public class AnyDistanceCircleMover implements ICircleMover {
 
         List<MoveProposal> possibleMoves = new ArrayList<>(4);
 
-        // By standard, add the current position as move because all circles without
+        // By default, add the current position as move because all circles without
         // distance can also stay at their position (only if cell is not invariant!)
         if (!origin.isInvariant()) {
             possibleMoves.add(new MoveProposal(origin.getGridX(), origin.getGridY(), origin.getCircle(),
@@ -53,11 +53,8 @@ public class AnyDistanceCircleMover implements ICircleMover {
         FieldCircle cellCircle = origin.getCircle();
         int foundCellIndex = -1;
 
-        System.out.println("direction " + direction.name());
         int indexOffset = mapper.mapRelatedCoordinateWithStep(origin);
-        System.out.println("indexOffset: " + indexOffset);
         if (mapper.mapBoardBoundaries(indexOffset)) {
-            System.out.println("indexOffset is in board boundaries");
             Cell pathCell;
             while (mapper.mapBoardBoundaries(indexOffset)) {
                 pathCell = mapper.mapCellCoordinates(indexOffset, origin);
@@ -75,18 +72,15 @@ public class AnyDistanceCircleMover implements ICircleMover {
         if (foundCellIndex >= 0) {
             Cell destinationCell = mapper.mapCellCoordinates(foundCellIndex, origin);
             if (destinationCell.isInvariant()) {
-                System.out.println("destinationCell is invariant");
                 while (destinationCell.isInvariant() && !destinationCell.isVisited() && mapper.mapBoardBoundaries(foundCellIndex)) {
                     foundCellIndex -= mapper.mapLoopStep();
                     destinationCell = mapper.mapCellCoordinates(foundCellIndex, destinationCell);
-                    System.out.println("next destinationCell: " + destinationCell);
                 }
 
                 if (destinationCell == origin) {
                     destinationCell = null;
                 }
             }
-            System.out.println("destinationCell: " + destinationCell);
 
             if (destinationCell != null) {
                 return new MoveProposal(destinationCell.getGridX(), destinationCell.getGridY(),
@@ -123,7 +117,7 @@ public class AnyDistanceCircleMover implements ICircleMover {
     }
 
     public void checkOriginCircle(Cell origin) {
-        if (!origin.isAnyCircleRegistered()) {
+        if (!origin.hasAnyCircleRegistered()) {
             throw new IllegalStateException("trying to identify possible moves for cell " + origin + " failed " +
                     "because no circle is registered at that cell");
         }

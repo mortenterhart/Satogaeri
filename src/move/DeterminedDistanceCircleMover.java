@@ -76,7 +76,7 @@ public class DeterminedDistanceCircleMover implements ICircleMover {
     }
 
     public void checkOriginCircle(Cell origin) {
-        if (!origin.isAnyCircleRegistered()) {
+        if (!origin.hasAnyCircleRegistered()) {
             throw new IllegalStateException("trying to identify possible moves for cell " + origin + " failed " +
                     "because no circle is registered at that cell");
         }

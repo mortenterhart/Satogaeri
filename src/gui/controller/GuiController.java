@@ -16,8 +16,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import logging.LogEngine;
@@ -181,9 +179,10 @@ public class GuiController {
         mainStage.setOnCloseRequest(event -> {
             mainStage.close();
             if (solverTask != null && !solverTask.isCancelled()) {
-                LogEngine.instance.log("cancelling task");
+                LogEngine.instance.logln("--> Cancelling task SatogaeriSolver");
                 solverTask.enableCancelling();
             }
+            LogEngine.instance.close();
         });
     }
 
@@ -193,7 +192,7 @@ public class GuiController {
 
         solverTask = new SatogaeriSolver(cellBoard);
         solverTask.setController(this);
-        solverTask.setControlButtons(solveButton, resetSimulationButton);
+        solverTask.setResetButton(resetSimulationButton);
         solverTask.setStatusLabel(statusLabel);
 
         ExecutorService solverService = Executors.newCachedThreadPool();
@@ -221,7 +220,7 @@ public class GuiController {
                 Cell currentCell = cellBoard.get(x, y);
                 StackPane circlePane = getStackPaneAt(x, y);
 
-                if (currentCell.isAnyCircleRegistered()) {
+                if (currentCell.hasAnyCircleRegistered()) {
                     FieldCircle currentCircle = currentCell.getCircle();
 
                     Circle stackCircle = new Circle(GUISettings.circleRadius);

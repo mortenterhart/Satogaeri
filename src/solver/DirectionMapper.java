@@ -121,20 +121,6 @@ public class DirectionMapper {
         throw new InvalidDirectionException("direction " + direction + " is not recognized");
     }
 
-    public int mapAnyDistanceCellLocation(int loopCoordinate) {
-        switch (direction) {
-            case LEFT:
-            case UP:
-                return loopCoordinate + 1;
-
-            case RIGHT:
-            case DOWN:
-                return loopCoordinate - 1;
-        }
-
-        throw new InvalidDirectionException("direction " + direction + " is not recognized");
-    }
-
     public Pos mapRectangleOrientation() {
         switch (direction) {
             case LEFT:

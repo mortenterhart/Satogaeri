@@ -7,11 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import logging.LogEngine;
 import main.GUISettings;
-import move.AnyDistanceCircleMover;
-import move.DeterminedDistanceCircleMover;
-import move.ICircleMover;
-import move.MoveDirection;
-import move.MoveProposal;
+import move.*;
 import puzzle.Board;
 import puzzle.Cell;
 import puzzle.Distance;
@@ -26,7 +22,6 @@ public class SatogaeriSolver implements Runnable {
     private GuiController controller;
     private volatile boolean isCancelled = false;
 
-    private Button solveButton;
     private Button resetSimulationButton;
     private Label statusLabel;
 
@@ -58,10 +53,12 @@ public class SatogaeriSolver implements Runnable {
      * @see Thread#run()
      */
     public void run() {
+        LogEngine.instance.logln("### Starting thread SatogaeriSolver");
         findSolution();
 
         activateResetButton();
         updateStatus("Simulation found solution and terminated successfully", true);
+        LogEngine.instance.logln("### Thread SatogaeriSolver terminates here");
     }
 
     private void findSolution() {
@@ -75,6 +72,8 @@ public class SatogaeriSolver implements Runnable {
             moveCirclesWithSolelySolution();
 
             if (isCancelled) {
+                LogEngine.instance.logln("!! ######## CAUGHT INTERRUPT ######### !!");
+                LogEngine.instance.logln("  --> Process will terminate");
                 return;
             }
         }
@@ -102,9 +101,11 @@ public class SatogaeriSolver implements Runnable {
     }
 
     private void markZeroDistanceCellsInvariant() {
+        LogEngine.instance.logln("--- Marking all circles with zero distance as invariant");
         for (FieldCircle circle : boardCircles) {
             Cell originCell = inducer.getCellBy(circle);
             if (circle != null && circle.hasZeroDistance() && !originCell.isInvariant()) {
+                LogEngine.instance.logln("  > Circle " + circle + " on position " + cellToString(originCell) + " cannot move and gets invariant");
                 inducer.getRegionBy(circle).setFinal(true);
                 circle.setInvariant(true);
                 updateStatus("Marking zero distance circle " + cellToString(originCell) + " and its region as invariant", false);
@@ -120,34 +121,35 @@ public class SatogaeriSolver implements Runnable {
     }
 
     private void moveCirclesWithSolelySolution() {
+        LogEngine.instance.logln("Moving circles with solely solution (= only one possible move)");
         for (FieldCircle circle : boardCircles) {
             Cell originCell = inducer.getCellBy(circle);
-            LogEngine.instance.log("Cell " + cellToString(originCell) + " has next circle registered");
             if (originCell != null && !circle.isInvariant()) {
-                LogEngine.instance.log("   Circle " + circle + " is not invariant");
+                LogEngine.instance.logln("  > Circle " + circle + " is not invariant");
                 List<MoveProposal> possibleMoves = fetchCircleMoves(circle);
 
-                LogEngine.instance.log("\n   Listing all possible moves for circle on cell " + cellToString(originCell));
+                LogEngine.instance.newLine(true);
+                LogEngine.instance.logln("  > Listing all possible moves for circle on cell " + cellToString(originCell));
                 for (MoveProposal move : possibleMoves) {
-                    LogEngine.instance.log("   " + move);
+                    LogEngine.instance.logln("   " + move);
                 }
-                LogEngine.instance.newLine();
+                LogEngine.instance.newLine(true);
 
                 if (isSolelySolution(originCell, possibleMoves)) {
-                    LogEngine.instance.log("   --> VICTORY! Circle only has one possible move");
+                    LogEngine.instance.logln("   ==> SUCCESS! Circle only has one possible move:");
                     MoveProposal move = possibleMoves.get(0);
-                    LogEngine.instance.log("   " + move);
+                    LogEngine.instance.logln("       " + move);
 
                     highlightCircleAttempt(originCell);
 
                     Cell destinationCell = cellBoard.get(move.getMoveX(), move.getMoveY());
-                    LogEngine.instance.log("   destinationCell: " + cellToString(destinationCell));
+                    LogEngine.instance.logln("   destinationCell is: " + cellToString(destinationCell));
                     moveCircle(originCell, destinationCell);
                     markCellsVisited(originCell, move);
                     updateStatus("Moving circle from " + cellToString(originCell) + " to " + cellToString(destinationCell)
                             + " with distance '" + circle.getDistance().toString() + "' and marking path as visited", false);
 
-                    LogEngine.instance.log("   Marking region and circle as invariant");
+                    LogEngine.instance.logln("   > Marking region and circle as invariant");
                     inducer.getRegionBy(destinationCell).setFinal(true);
                     circle.setInvariant(true);
 
@@ -155,14 +157,11 @@ public class SatogaeriSolver implements Runnable {
                 }
             }
 
-            System.out.println("isCancelled: " + isCancelled);
-
             if (isCancelled) {
                 return;
             }
 
-            cellBoard.printCircles();
-            LogEngine.instance.log("\n");
+            cellBoard.dumpCellBoard();
         }
     }
 
@@ -191,20 +190,21 @@ public class SatogaeriSolver implements Runnable {
     }
 
     private void insertChronologicalMove(MoveProposal move) {
+        LogEngine.instance.logln("  Inserting move into chronological moves and refreshing GUI");
         chronologicalMoves.add(move);
         refreshGUIBoard();
         waitInterval(GUISettings.sleepInterval);
     }
 
     private void highlightCircleAttempt(Cell cell) {
-        if (!cell.isAnyCircleRegistered()) {
+        if (!cell.hasAnyCircleRegistered()) {
             throw new IllegalStateException("attempting to highlight circle line, but cell " +
                     cellToString(cell) + " does not contain any circle");
         }
 
-        refreshGUI(() -> {
-            controller.highlightCircleLine(cell.getGridX(), cell.getGridY(), GUISettings.circleOutlineColor);
-        });
+        refreshGUI(() ->
+                controller.highlightCircleLine(cell.getGridX(), cell.getGridY(), GUISettings.circleOutlineColor)
+        );
 
         waitInterval(GUISettings.circleHighlightingTime);
     }
@@ -234,7 +234,7 @@ public class SatogaeriSolver implements Runnable {
     private void moveCircle(Cell origin, Cell destination) {
         checkOriginAndDestinationCells(origin, destination);
 
-        LogEngine.instance.log("   ... Moving circle from " + cellToString(origin) + " to " + cellToString(destination));
+        LogEngine.instance.logln("   ... Moving circle from " + cellToString(origin) + " to " + cellToString(destination));
         FieldCircle movedCircle = origin.getCircle();
         origin.detachCircle();
         destination.registerCircle(movedCircle);
@@ -250,7 +250,10 @@ public class SatogaeriSolver implements Runnable {
              mapper.mapMoveConditionInclusive(i, destinationIndex);
              i += mapper.mapLoopStep()) {
 
-            mapper.mapCellCoordinates(i, origin).setVisited(true);
+            Cell visitedCell = mapper.mapCellCoordinates(i, origin);
+            visitedCell.setVisited(true);
+            LogEngine.instance.logln("  Marking cell " + cellToString(visitedCell) + " as visited");
+            LogEngine.instance.logln("    -> " + visitedCell);
         }
     }
 
@@ -282,8 +285,7 @@ public class SatogaeriSolver implements Runnable {
         return null;
     }
 
-    public void setControlButtons(Button solveButton, Button resetSimulationButton) {
-        this.solveButton = solveButton;
+    public void setResetButton(Button resetSimulationButton) {
         this.resetSimulationButton = resetSimulationButton;
     }
 

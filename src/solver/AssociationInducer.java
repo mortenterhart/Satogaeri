@@ -34,7 +34,7 @@ public class AssociationInducer {
         for (int y = 0; y < board.getWidth(); y++) {
             for (int x = 0; x < board.getHeight(); x++) {
                 Cell currentCell = board.get(x, y);
-                if (currentCell != null && currentCell.isAnyCircleRegistered() &&
+                if (currentCell != null && currentCell.hasAnyCircleRegistered() &&
                         currentCell.getCircle() == circle) {
                     return currentCell;
                 }
