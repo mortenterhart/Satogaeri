@@ -97,7 +97,8 @@ public class Board {
         LogEngine.instance.logln("@      cell with any distance");
         LogEngine.instance.logln("-      visited cell");
         LogEngine.instance.logln("X      invariant cell");
-        LogEngine.instance.logln(".      free cell\n");
+        LogEngine.instance.logln(".      free cell");
+        LogEngine.instance.newLine(true);
     }
 
     private void printHeader() {
