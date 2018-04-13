@@ -1,6 +1,7 @@
 package gui.controller;
 
 public class IndexExpander {
+
     private int boardWidth;
 
     public IndexExpander(int boardWidth) {

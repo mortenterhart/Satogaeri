@@ -7,7 +7,11 @@ import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import logging.LogEngine;
 import main.GUISettings;
-import move.*;
+import move.AnyDistanceCircleMover;
+import move.DeterminedDistanceCircleMover;
+import move.ICircleMover;
+import move.MoveDirection;
+import move.MoveProposal;
 import puzzle.Board;
 import puzzle.Cell;
 import puzzle.Distance;
@@ -17,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SatogaeriSolver implements Runnable {
+
     private Board cellBoard;
     private List<FieldCircle> boardCircles;
     private GuiController controller;
@@ -111,7 +116,7 @@ public class SatogaeriSolver implements Runnable {
                 updateStatus("Marking zero distance circle " + cellToString(originCell) + " and its region as invariant", false);
                 highlightCircleAttempt(originCell);
                 insertChronologicalMove(new MoveProposal(originCell.getGridX(), originCell.getGridY(),
-                        circle, MoveDirection.LEFT, new Distance(0)));
+                                                         circle, MoveDirection.LEFT, new Distance(0)));
             }
 
             if (isCancelled) {
@@ -147,7 +152,7 @@ public class SatogaeriSolver implements Runnable {
                     moveCircle(originCell, destinationCell);
                     markCellsVisited(originCell, move);
                     updateStatus("Moving circle from " + cellToString(originCell) + " to " + cellToString(destinationCell)
-                            + " with distance '" + circle.getDistance().toString() + "' and marking path as visited", false);
+                                 + " with distance '" + circle.getDistance().toString() + "' and marking path as visited", false);
 
                     LogEngine.instance.logln("   > Marking region and circle as invariant");
                     inducer.getRegionBy(destinationCell).setFinal(true);
@@ -199,11 +204,11 @@ public class SatogaeriSolver implements Runnable {
     private void highlightCircleAttempt(Cell cell) {
         if (!cell.hasAnyCircleRegistered()) {
             throw new IllegalStateException("attempting to highlight circle line, but cell " +
-                    cellToString(cell) + " does not contain any circle");
+                                            cellToString(cell) + " does not contain any circle");
         }
 
         refreshGUI(() ->
-                controller.highlightCircleLine(cell.getGridX(), cell.getGridY(), GUISettings.circleOutlineColor)
+                       controller.highlightCircleLine(cell.getGridX(), cell.getGridY(), GUISettings.circleOutlineColor)
         );
 
         waitInterval(GUISettings.circleHighlightingTime);
@@ -260,7 +265,8 @@ public class SatogaeriSolver implements Runnable {
     private void waitInterval(long millis) {
         try {
             Thread.sleep(millis);
-        } catch (InterruptedException exception) {
+        }
+        catch (InterruptedException exception) {
             //if (isCancelled()) {
             //    cancellingRoutine();
             // }

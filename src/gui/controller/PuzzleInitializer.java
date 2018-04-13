@@ -13,12 +13,17 @@ import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import main.AlgorithmParameters;
 import main.GUISettings;
-import puzzle.*;
+import puzzle.Board;
+import puzzle.Cell;
+import puzzle.Distance;
+import puzzle.FieldCircle;
+import puzzle.Region;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PuzzleInitializer {
+
     private Board board;
     private GridPane grid;
     private List<StackPane> stackPaneList;
@@ -35,9 +40,9 @@ public class PuzzleInitializer {
         }
 
         if (grid.getRowConstraints().size() != board.getWidth() ||
-                grid.getColumnConstraints().size() != board.getHeight()) {
+            grid.getColumnConstraints().size() != board.getHeight()) {
             throw new IllegalStateException("graphical grid pane has different dimensions " +
-                    "than board data structure");
+                                            "than board data structure");
         }
 
         prepareGridWithStackPanes();
@@ -121,7 +126,7 @@ public class PuzzleInitializer {
     private void insertCircles() {
         if (!haveCorrectDimensions()) {
             throw new IllegalStateException("either the grid or the board provides other dimensions " +
-                    "than " + AlgorithmParameters.instance.boardDimension);
+                                            "than " + AlgorithmParameters.instance.boardDimension);
         }
 
         addCircleToStackPaneAt(0, 5, 1);
@@ -191,193 +196,193 @@ public class PuzzleInitializer {
 
     private boolean haveCorrectDimensions() {
         return grid.getRowConstraints().size() == AlgorithmParameters.instance.boardDimension &&
-                grid.getColumnConstraints().size() == AlgorithmParameters.instance.boardDimension &&
-                board.getWidth() == AlgorithmParameters.instance.boardDimension &&
-                board.getHeight() == AlgorithmParameters.instance.boardDimension;
+               grid.getColumnConstraints().size() == AlgorithmParameters.instance.boardDimension &&
+               board.getWidth() == AlgorithmParameters.instance.boardDimension &&
+               board.getHeight() == AlgorithmParameters.instance.boardDimension;
     }
 
     private void constructRegions() {
         if (!haveCorrectDimensions()) {
             throw new IllegalStateException("either the grid or the board provides other dimensions " +
-                    "than " + AlgorithmParameters.instance.boardDimension);
+                                            "than " + AlgorithmParameters.instance.boardDimension);
         }
 
         int[][] region1 = {
-                { 0, 0 },
-                { 1, 0 },
-                { 0, 1 },
-                { 1, 1 },
-                { 2, 1 },
-                { 2, 2 }
+            {0, 0},
+            {1, 0},
+            {0, 1},
+            {1, 1},
+            {2, 1},
+            {2, 2}
         };
 
         int[][] region2 = {
-                { 2, 0 },
-                { 3, 0 },
-                { 3, 1 }
+            {2, 0},
+            {3, 0},
+            {3, 1}
         };
 
         int[][] region3 = {
-                { 4, 0 },
-                { 5, 0 },
-                { 6, 0 },
-                { 7, 0 },
-                { 8, 0 },
-                { 4, 1 },
-                { 6, 1 }
+            {4, 0},
+            {5, 0},
+            {6, 0},
+            {7, 0},
+            {8, 0},
+            {4, 1},
+            {6, 1}
         };
 
         int[][] region4 = {
-                { 9, 0 },
-                { 7, 1 },
-                { 8, 1 },
-                { 9, 1 },
-                { 8, 2 },
-                { 9, 2 }
+            {9, 0},
+            {7, 1},
+            {8, 1},
+            {9, 1},
+            {8, 2},
+            {9, 2}
         };
 
         int[][] region5 = {
-                { 5, 1 },
-                { 5, 2 },
-                { 5, 3 },
-                { 6, 3 }
+            {5, 1},
+            {5, 2},
+            {5, 3},
+            {6, 3}
         };
 
         int[][] region6 = {
-                { 0, 2 },
-                { 0, 3 },
-                { 1, 3 }
+            {0, 2},
+            {0, 3},
+            {1, 3}
         };
 
         int[][] region7 = {
-                { 1, 2 }
+            {1, 2}
         };
 
         int[][] region8 = {
-                { 3, 2 },
-                { 4, 2 },
-                { 3, 3 }
+            {3, 2},
+            {4, 2},
+            {3, 3}
         };
 
         int[][] region9 = {
-                { 6, 2 },
-                { 7, 2 },
-                { 7, 3 },
-                { 8, 3 },
-                { 9, 3 }
+            {6, 2},
+            {7, 2},
+            {7, 3},
+            {8, 3},
+            {9, 3}
         };
 
         int[][] region10 = {
-                { 2, 3 },
-                { 2, 4 }
+            {2, 3},
+            {2, 4}
         };
 
         int[][] region11 = {
-                { 4, 3 },
-                { 3, 4 },
-                { 4, 4 },
-                { 5, 4 }
+            {4, 3},
+            {3, 4},
+            {4, 4},
+            {5, 4}
         };
 
         int[][] region12 = {
-                { 0, 4 },
-                { 1, 4 },
-                { 0, 5 }
+            {0, 4},
+            {1, 4},
+            {0, 5}
         };
 
         int[][] region13 = {
-                { 6, 4 },
-                { 7, 4 },
-                { 8, 4 }
+            {6, 4},
+            {7, 4},
+            {8, 4}
         };
 
         int[][] region14 = {
-                { 9, 4 },
-                { 8, 5 },
-                { 9, 5 }
+            {9, 4},
+            {8, 5},
+            {9, 5}
         };
 
         int[][] region15 = {
-                { 1, 5 },
-                { 2, 5 },
-                { 3, 5 }
+            {1, 5},
+            {2, 5},
+            {3, 5}
         };
 
         int[][] region16 = {
-                { 4, 5 },
-                { 5, 5 },
-                { 6, 5 },
-                { 5, 6 }
+            {4, 5},
+            {5, 5},
+            {6, 5},
+            {5, 6}
         };
 
         int[][] region17 = {
-                { 7, 5 },
-                { 7, 6 }
+            {7, 5},
+            {7, 6}
         };
 
         int[][] region18 = {
-                { 0, 6 },
-                { 1, 6 },
-                { 2, 6 },
-                { 2, 7 },
-                { 3, 7 }
+            {0, 6},
+            {1, 6},
+            {2, 6},
+            {2, 7},
+            {3, 7}
         };
 
         int[][] region19 = {
-                { 3, 6 },
-                { 4, 6 },
-                { 4, 7 },
-                { 4, 8 }
+            {3, 6},
+            {4, 6},
+            {4, 7},
+            {4, 8}
         };
 
         int[][] region20 = {
-                { 6, 6 },
-                { 5, 7 },
-                { 6, 7 }
+            {6, 6},
+            {5, 7},
+            {6, 7}
         };
 
         int[][] region21 = {
-                { 8, 6 },
-                { 9, 6 },
-                { 9, 7 }
+            {8, 6},
+            {9, 6},
+            {9, 7}
         };
 
         int[][] region22 = {
-                { 0, 7 },
-                { 1, 7 },
-                { 0, 8 },
-                { 1, 8 },
-                { 2, 8 },
-                { 0, 9 }
+            {0, 7},
+            {1, 7},
+            {0, 8},
+            {1, 8},
+            {2, 8},
+            {0, 9}
         };
 
         int[][] region23 = {
-                { 7, 7 },
-                { 7, 8 },
-                { 8, 8 },
-                { 9, 8 },
-                { 8, 9 },
-                { 9, 9 }
+            {7, 7},
+            {7, 8},
+            {8, 8},
+            {9, 8},
+            {8, 9},
+            {9, 9}
         };
 
         int[][] region24 = {
-                { 8, 7 }
+            {8, 7}
         };
 
         int[][] region25 = {
-                { 3, 8 },
-                { 5, 8 },
-                { 1, 9 },
-                { 2, 9 },
-                { 3, 9 },
-                { 4, 9 },
-                { 5, 9 }
+            {3, 8},
+            {5, 8},
+            {1, 9},
+            {2, 9},
+            {3, 9},
+            {4, 9},
+            {5, 9}
         };
 
         int[][] region26 = {
-                { 6, 8 },
-                { 6, 9 },
-                { 7, 9 }
+            {6, 8},
+            {6, 9},
+            {7, 9}
         };
 
         addRegionToCellBoard(region1);
@@ -426,8 +431,8 @@ public class PuzzleInitializer {
             for (int[] newRegionCell : region) {
                 if (registeredRegion.containsCell(newRegionCell)) {
                     throw new IllegalStateException(String.format("trying to add cell (%d, %d) " +
-                                    "to new region while this cell is already registered in region %s", newRegionCell[0],
-                            newRegionCell[1], registeredRegion.toString()));
+                                                                  "to new region while this cell is already registered in region %s", newRegionCell[0],
+                                                                  newRegionCell[1], registeredRegion.toString()));
                 }
             }
         }
@@ -436,118 +441,118 @@ public class PuzzleInitializer {
     private void insertRegionLines() {
         if (!haveCorrectDimensions()) {
             throw new IllegalStateException("either the grid or the board provides other dimensions " +
-                    "than " + AlgorithmParameters.instance.boardDimension);
+                                            "than " + AlgorithmParameters.instance.boardDimension);
         }
 
         int[][] verticalLineIndices = {
-                { 0, 2 },
-                { 0, 4 },
-                { 0, 9 },
-                { 1, 3 },
-                { 1, 4 },
-                { 1, 5 },
-                { 1, 6 },
-                { 1, 7 },
-                { 2, 1 },
-                { 2, 2 },
-                { 2, 3 },
-                { 2, 5 },
-                { 2, 6 },
-                { 2, 8 },
-                { 3, 2 },
-                { 3, 3 },
-                { 3, 4 },
-                { 3, 5 },
-                { 3, 7 },
-                { 4, 2 },
-                { 4, 3 },
-                { 4, 6 },
-                { 4, 9 },
-                { 5, 1 },
-                { 5, 4 },
-                { 5, 7 },
-                { 5, 8 },
-                { 6, 3 },
-                { 6, 5 },
-                { 6, 6 },
-                { 6, 7 },
-                { 6, 8 },
-                { 7, 2 },
-                { 7, 4 },
-                { 7, 5 },
-                { 7, 7 },
-                { 7, 8 },
-                { 7, 9 },
-                { 8, 3 },
-                { 8, 4 },
-                { 8, 5 },
-                { 8, 6 },
-                { 8, 7 },
-                { 9, 1 },
-                { 9, 6 },
-                { 9, 8 } };
+            {0, 2},
+            {0, 4},
+            {0, 9},
+            {1, 3},
+            {1, 4},
+            {1, 5},
+            {1, 6},
+            {1, 7},
+            {2, 1},
+            {2, 2},
+            {2, 3},
+            {2, 5},
+            {2, 6},
+            {2, 8},
+            {3, 2},
+            {3, 3},
+            {3, 4},
+            {3, 5},
+            {3, 7},
+            {4, 2},
+            {4, 3},
+            {4, 6},
+            {4, 9},
+            {5, 1},
+            {5, 4},
+            {5, 7},
+            {5, 8},
+            {6, 3},
+            {6, 5},
+            {6, 6},
+            {6, 7},
+            {6, 8},
+            {7, 2},
+            {7, 4},
+            {7, 5},
+            {7, 7},
+            {7, 8},
+            {7, 9},
+            {8, 3},
+            {8, 4},
+            {8, 5},
+            {8, 6},
+            {8, 7},
+            {9, 1},
+            {9, 6},
+            {9, 8}};
 
         for (int[] verticalCoordinates : verticalLineIndices) {
             addVerticalRegionLineToGrid(verticalCoordinates[0], verticalCoordinates[1]);
         }
 
         int[][] horizontalLineIndices = {
-                { 1, 2 },
-                { 1, 5 },
-                { 1, 7 },
-                { 1, 8 },
-                { 2, 0 },
-                { 2, 1 },
-                { 2, 3 },
-                { 2, 4 },
-                { 2, 6 },
-                { 2, 7 },
-                { 3, 1 },
-                { 3, 2 },
-                { 3, 4 },
-                { 3, 6 },
-                { 3, 8 },
-                { 3, 9 },
-                { 4, 0 },
-                { 4, 1 },
-                { 4, 3 },
-                { 4, 5 },
-                { 4, 6 },
-                { 4, 7 },
-                { 4, 8 },
-                { 4, 9 },
-                { 5, 1 },
-                { 5, 2 },
-                { 5, 3 },
-                { 5, 4 },
-                { 5, 5 },
-                { 5, 6 },
-                { 5, 7 },
-                { 5, 8 },
-                { 6, 0 },
-                { 6, 1 },
-                { 6, 2 },
-                { 6, 3 },
-                { 6, 4 },
-                { 6, 6 },
-                { 6, 8 },
-                { 6, 9 },
-                { 7, 0 },
-                { 7, 1 },
-                { 7, 5 },
-                { 7, 3 },
-                { 7, 7 },
-                { 7, 8 },
-                { 8, 2 },
-                { 8, 3 },
-                { 8, 5 },
-                { 8, 6 },
-                { 8, 8 },
-                { 8, 9 },
-                { 9, 1 },
-                { 9, 2 },
-                { 9, 4 },
-                { 9, 7 } };
+            {1, 2},
+            {1, 5},
+            {1, 7},
+            {1, 8},
+            {2, 0},
+            {2, 1},
+            {2, 3},
+            {2, 4},
+            {2, 6},
+            {2, 7},
+            {3, 1},
+            {3, 2},
+            {3, 4},
+            {3, 6},
+            {3, 8},
+            {3, 9},
+            {4, 0},
+            {4, 1},
+            {4, 3},
+            {4, 5},
+            {4, 6},
+            {4, 7},
+            {4, 8},
+            {4, 9},
+            {5, 1},
+            {5, 2},
+            {5, 3},
+            {5, 4},
+            {5, 5},
+            {5, 6},
+            {5, 7},
+            {5, 8},
+            {6, 0},
+            {6, 1},
+            {6, 2},
+            {6, 3},
+            {6, 4},
+            {6, 6},
+            {6, 8},
+            {6, 9},
+            {7, 0},
+            {7, 1},
+            {7, 5},
+            {7, 3},
+            {7, 7},
+            {7, 8},
+            {8, 2},
+            {8, 3},
+            {8, 5},
+            {8, 6},
+            {8, 8},
+            {8, 9},
+            {9, 1},
+            {9, 2},
+            {9, 4},
+            {9, 7}};
 
         for (int[] horizontalCoordinates : horizontalLineIndices) {
             addHorizontalRegionLineToGrid(horizontalCoordinates[0], horizontalCoordinates[1]);
@@ -571,5 +576,4 @@ public class PuzzleInitializer {
         grid.add(regionLine, columnIndex, rowIndex);
         GridPane.setHalignment(regionLine, HPos.LEFT);
     }
-
 }

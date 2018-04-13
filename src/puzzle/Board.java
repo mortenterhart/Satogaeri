@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Board {
+
     private List<Region> containedRegions;
     private Cell[][] cellBoard;
 
@@ -57,10 +58,10 @@ public class Board {
 
     private void checkBoundaries(int posX, int posY) {
         if (posX < 0 || posX >= cellBoard.length ||
-                posY < 0 || posY >= cellBoard[posX].length) {
+            posY < 0 || posY >= cellBoard[posX].length) {
 
             throw new IndexOutOfBoundsException("tried to access position (" + posX + ", " +
-                    posY + ") with board dimension of " + getWidth());
+                                                posY + ") with board dimension of " + getWidth());
         }
     }
 
@@ -79,14 +80,18 @@ public class Board {
                 if (currentCell.hasAnyCircleRegistered()) {
                     if (!currentCell.getCircle().hasAnyDistance()) {
                         LogEngine.instance.log(currentCell.getCircle().getDistance().toIntValue() + " ", false);
-                    } else {
+                    }
+                    else {
                         LogEngine.instance.log("@ ", false);
                     }
-                } else if (currentCell.isVisited()) {
+                }
+                else if (currentCell.isVisited()) {
                     LogEngine.instance.log("- ", false);
-                } else if (currentCell.isInvariant()) {
+                }
+                else if (currentCell.isInvariant()) {
                     LogEngine.instance.log("X ", false);
-                } else {
+                }
+                else {
                     LogEngine.instance.log(". ", false);
                 }
             }

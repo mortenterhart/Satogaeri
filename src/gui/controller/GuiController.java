@@ -8,7 +8,11 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -34,6 +38,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class GuiController {
+
     private Board cellBoard;
     private IndexExpander expander;
 
@@ -126,7 +131,6 @@ public class GuiController {
                 triggeringCellColorReference.setStroke(newValue);
             }
         });
-
     }
 
     private void observeTimeSliders() {
@@ -297,7 +301,7 @@ public class GuiController {
 
                         default:
                             throw new DirectionMapper.InvalidDirectionException("illegal direction " +
-                                    move.getDirection() + " detected");
+                                                                                move.getDirection() + " detected");
                     }
 
                     Rectangle visitedPathRectangle = new Rectangle(GUISettings.gridCellWidth, 20, Color.LIGHTGRAY);
@@ -342,7 +346,7 @@ public class GuiController {
             if (gridChild instanceof StackPane) {
                 StackPane stackPane = (StackPane) gridChild;
                 stackPane.getChildren().removeIf(node -> node instanceof Circle || node instanceof Label ||
-                        node instanceof Rectangle);
+                                                         node instanceof Rectangle);
             }
         }
     }

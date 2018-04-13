@@ -4,25 +4,20 @@ import javafx.scene.paint.Color;
 
 public class GUISettings {
 
-    private GUISettings() { }
-
     public static final String fxmlPackagePath = "/gui/model/Satogaeri_Surface.fxml";
     public static final double circleRadius = 15;
     public static final double gridCellWidth = 45;
     public static final double gridCellHeight = 45;
     public static final int distanceLabelFontSize = 20;
-
     private static final Color defaultCircleOutlineColor = Color.YELLOW;
     private static final Color defaultInvariantRegionColor = Color.GREENYELLOW;
-
     private static final long defaultSleepInterval = 1000L;
     private static final long defaultCircleHighlightingTime = 500L;
-
     public static Color circleOutlineColor = defaultCircleOutlineColor;
     public static Color invariantRegionColor = defaultInvariantRegionColor;
-
     public static long sleepInterval = defaultSleepInterval;
     public static long circleHighlightingTime = defaultCircleHighlightingTime;
+    private GUISettings() { }
 
     public static void setSleepInterval(long interval) {
         sleepInterval = interval;

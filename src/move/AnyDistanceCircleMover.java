@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class AnyDistanceCircleMover implements ICircleMover {
+
     private Board cellBoard;
     private boolean isClosed;
 
@@ -31,7 +32,7 @@ public class AnyDistanceCircleMover implements ICircleMover {
         // distance can also stay at their position (only if cell is not invariant!)
         if (!origin.isInvariant()) {
             possibleMoves.add(new MoveProposal(origin.getGridX(), origin.getGridY(), origin.getCircle(),
-                    MoveDirection.LEFT, new Distance(0)));
+                                               MoveDirection.LEFT, new Distance(0)));
         }
 
         for (MoveDirection direction : MoveDirection.values()) {
@@ -60,7 +61,8 @@ public class AnyDistanceCircleMover implements ICircleMover {
                 pathCell = mapper.mapCellCoordinates(indexOffset, origin);
                 if (pathCell.isVisited()) {
                     break;
-                } else if (!pathCell.isInvariant()) {
+                }
+                else if (!pathCell.isInvariant()) {
                     foundCellIndex = indexOffset;
                     break;
                 }
@@ -84,7 +86,7 @@ public class AnyDistanceCircleMover implements ICircleMover {
 
             if (destinationCell != null) {
                 return new MoveProposal(destinationCell.getGridX(), destinationCell.getGridY(),
-                        cellCircle, direction, new Distance(Math.abs(foundCellIndex - mapper.mapRelatedCoordinate(origin))));
+                                        cellCircle, direction, new Distance(Math.abs(foundCellIndex - mapper.mapRelatedCoordinate(origin))));
             }
         }
 
@@ -110,7 +112,6 @@ public class AnyDistanceCircleMover implements ICircleMover {
             if (!pathCell.isVisited() && !pathCell.isInvariant()) {
                 numberFreeCells++;
             }
-
         }
 
         return originCell == destinationCell || numberFreeCells == 1;
@@ -119,7 +120,7 @@ public class AnyDistanceCircleMover implements ICircleMover {
     public void checkOriginCircle(Cell origin) {
         if (!origin.hasAnyCircleRegistered()) {
             throw new IllegalStateException("trying to identify possible moves for cell " + origin + " failed " +
-                    "because no circle is registered at that cell");
+                                            "because no circle is registered at that cell");
         }
 
         if (!origin.getCircle().hasAnyDistance()) {

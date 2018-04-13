@@ -1,6 +1,7 @@
 package puzzle;
 
 public class FieldCircle {
+
     private Distance moveDistance;
     private boolean isInvariant = false;
 

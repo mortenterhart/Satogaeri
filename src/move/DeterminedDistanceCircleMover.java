@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DeterminedDistanceCircleMover implements ICircleMover {
+
     private Board cellBoard;
     private boolean isClosed = false;
 
@@ -63,7 +64,7 @@ public class DeterminedDistanceCircleMover implements ICircleMover {
 
             if (movePossible) {
                 return new MoveProposal(destinationCell.getGridX(), destinationCell.getGridY(),
-                        cellCircle, direction, new Distance(cellCircle.getDistance()));
+                                        cellCircle, direction, new Distance(cellCircle.getDistance()));
             }
         }
 
@@ -78,12 +79,12 @@ public class DeterminedDistanceCircleMover implements ICircleMover {
     public void checkOriginCircle(Cell origin) {
         if (!origin.hasAnyCircleRegistered()) {
             throw new IllegalStateException("trying to identify possible moves for cell " + origin + " failed " +
-                    "because no circle is registered at that cell");
+                                            "because no circle is registered at that cell");
         }
 
         if (origin.getCircle().hasAnyDistance()) {
             throw new IllegalStateException("registered circle in cell " + origin + " has any distance. Use this " +
-                    "method for determined distances!");
+                                            "method for determined distances!");
         }
     }
 

@@ -6,6 +6,7 @@ import puzzle.Board;
 import puzzle.Cell;
 
 public class DirectionMapper {
+
     private MoveDirection direction;
     private Board cellBoard;
 

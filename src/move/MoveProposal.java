@@ -4,6 +4,7 @@ import puzzle.Distance;
 import puzzle.FieldCircle;
 
 public class MoveProposal {
+
     private int moveX;
     private int moveY;
     private FieldCircle movedCircle;

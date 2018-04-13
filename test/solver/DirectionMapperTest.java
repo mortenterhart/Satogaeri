@@ -10,6 +10,7 @@ import puzzle.Cell;
 import puzzle.FieldCircle;
 
 public class DirectionMapperTest {
+
     private static DirectionMapper mapper;
     private static MoveDirection direction = MoveDirection.DOWN;
 

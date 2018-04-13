@@ -11,5 +11,5 @@ public enum Configuration {
     public final String lineSeparator = System.getProperty("line.separator");
 
     public final String logFilePath = userDirectory + fileSeparator + "log" + fileSeparator +
-            projectName + ".log";
+                                      projectName + ".log";
 }

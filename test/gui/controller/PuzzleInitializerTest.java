@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import puzzle.Board;
 
 public class PuzzleInitializerTest {
+
     private static GridPane gridPane;
     private static Board board;
     private static int boardDimension = AlgorithmParameters.instance.boardDimension;

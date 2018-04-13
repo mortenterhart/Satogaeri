@@ -8,6 +8,7 @@ import puzzle.Region;
 import java.util.Objects;
 
 public class AssociationInducer {
+
     private Board board;
 
     public AssociationInducer(Board board) {
@@ -35,7 +36,7 @@ public class AssociationInducer {
             for (int x = 0; x < board.getHeight(); x++) {
                 Cell currentCell = board.get(x, y);
                 if (currentCell != null && currentCell.hasAnyCircleRegistered() &&
-                        currentCell.getCircle() == circle) {
+                    currentCell.getCircle() == circle) {
                     return currentCell;
                 }
             }

@@ -25,7 +25,7 @@ public class Distance {
     @Override
     public boolean equals(Object object) {
         return object != null && object instanceof Distance &&
-                this.distance == ((Distance) object).distance;
+               this.distance == ((Distance) object).distance;
     }
 
     @Override

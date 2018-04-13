@@ -33,5 +33,4 @@ public class Application extends javafx.application.Application {
 
         primaryStage.show();
     }
-
 }

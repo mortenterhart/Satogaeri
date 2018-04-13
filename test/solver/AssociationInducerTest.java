@@ -4,9 +4,14 @@ import main.AlgorithmParameters;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import puzzle.*;
+import puzzle.Board;
+import puzzle.Cell;
+import puzzle.Distance;
+import puzzle.FieldCircle;
+import puzzle.Region;
 
 public class AssociationInducerTest {
+
     private static AssociationInducer inducer;
     private static Board board;
     private static FieldCircle keyCircle;

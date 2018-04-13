@@ -1,6 +1,7 @@
 package puzzle;
 
 public class Cell {
+
     private final int gridX;
     private final int gridY;
     private FieldCircle attachedCircle;
@@ -64,7 +65,6 @@ public class Cell {
     @Override
     public String toString() {
         return "Cell { x = " + gridX + ", y = " + gridY + ", visited = " + isVisited + ", invariant = " + isInvariant +
-                ", circleRegistered = " + (hasAnyCircleRegistered() ? "yes, circle = " + attachedCircle : "no") + " }";
+               ", circleRegistered = " + (hasAnyCircleRegistered() ? "yes, circle = " + attachedCircle : "no") + " }";
     }
-
 }

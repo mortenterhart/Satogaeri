@@ -2,7 +2,11 @@ package logging;
 
 import main.Configuration;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,11 +28,13 @@ public enum LogEngine {
     public void init() {
         try {
             writer = new BufferedWriter(new FileWriter(new File(Configuration.instance.logFilePath)));
-        } catch (FileNotFoundException exc) {
+        }
+        catch (FileNotFoundException exc) {
             System.err.println("Error: Log File '" + Configuration.instance.logFilePath +
-                    "' could not be created!");
+                               "' could not be created!");
             exc.printStackTrace();
-        } catch (IOException exc) {
+        }
+        catch (IOException exc) {
             exc.printStackTrace();
         }
     }
@@ -44,12 +50,14 @@ public enum LogEngine {
             if (appendDatePrefix) {
                 String datePrefix = "[" + dateFormat.format(new Date()) + "]:  ";
                 writer.write(datePrefix + message);
-            } else {
+            }
+            else {
                 writer.write(message);
             }
 
             writer.flush();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             ioe.getMessage();
             ioe.printStackTrace();
         }
@@ -60,12 +68,14 @@ public enum LogEngine {
             if (appendDatePrefix) {
                 String datePrefix = "[" + dateFormat.format(new Date()) + "]:  ";
                 writer.write(datePrefix + message + Configuration.instance.lineSeparator);
-            } else {
+            }
+            else {
                 writer.write(message + Configuration.instance.lineSeparator);
             }
 
             writer.flush();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             ioe.getMessage();
             ioe.printStackTrace();
         }
@@ -110,7 +120,8 @@ public enum LogEngine {
     public void close() {
         try {
             writer.close();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             System.err.println("Fatal Error occurred during closing: IO Error (see the stacktrace)");
             ioe.printStackTrace();
         }

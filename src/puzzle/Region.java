@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Region {
+
     private List<Cell> cells;
     private boolean isFinal = false;
 
@@ -35,7 +36,7 @@ public class Region {
     public boolean contains(FieldCircle circle) {
         for (Cell regionCell : cells) {
             if (regionCell != null && regionCell.hasAnyCircleRegistered() &&
-                    regionCell.getCircle() == circle) {
+                regionCell.getCircle() == circle) {
                 return true;
             }
         }
