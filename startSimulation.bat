@@ -15,7 +15,7 @@ IF ERRORLEVEL 1 (
     EXIT 2
 )
 
-IF NOT EXIST "src" (
+IF NOT EXIST "%main_class_file_path%" (
     ECHO error: You are not in the correct root directory. Please execute this script from >&2
     ECHO error: %script_directory% >&2
 
@@ -27,7 +27,7 @@ ECHO [%program_name%]: Compiling Java sources ...
 javac -d "%output_folder%" -classpath "src" "%main_class_file_path%"
 
 IF ERRORLEVEL 0 IF NOT ERRORLEVEL 1 (
-    ECHO [%program_name%]: Compiled bytecode was moved to 'build' folder.
+    ECHO [%program_name%]: Compiled bytecode was moved to '%output_folder%': folder.
     ECHO.
 
     ECHO [%program_name%]: Executing %program_name%

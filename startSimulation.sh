@@ -13,18 +13,12 @@ if ! type javac > /dev/null 2>&1; then
     exit 2;
 fi
 
-if [ "${PWD##*/}" != "Satogaeri" ]; then
-    printf "error: You are not in the correct root directory. Please execute this script from\n" >&2;
-    printf "error: %s\n" "$(dirname "$0")" >&2;
-    exit 2;
-fi
-
-if [ -d "src" ]; then
+if [ -f "${main_class_file_path}" ]; then
     printf "[%s]: Compiling Java sources ...\n" "${program_name}";
 
     javac -d "${output_folder}" -classpath "${source_folder}" "${main_class_file_path}";
     if [ $? -eq 0 ]; then
-        printf "[%s]: Compiled bytecode was moved to 'build' folder.\n\n" "${program_name}";
+        printf "[%s]: Compiled bytecode was moved to '%s' folder.\n\n" "${program_name}" "${output_folder}";
         printf "[%s]: Executing %s\n" "${program_name}" "${program_name}";
 
         java -classpath "${source_folder}:${output_folder}" "${main_class_java_path}";
@@ -33,4 +27,8 @@ if [ -d "src" ]; then
         printf "[%s]: Failed to compile the Java sources! Exiting ...\n";
         exit 1;
     fi
+else
+    printf "error: You are not in the correct root directory. Please execute this script from\n" >&2;
+    printf "error: %s\n" "$(dirname "$0")" >&2;
+    exit 2;
 fi
