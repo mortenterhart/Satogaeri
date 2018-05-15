@@ -8,7 +8,7 @@
   verschieben lassen (die einzige Möglichkeit)
 * Kreise mit 0 als Wert können auch direkt als final markiert werden (einzige Möglichkeit,
   können sich nicht bewegen und bleiben auf dem aktuellen Feld stehen)
-  
+
 ## Weitergehende Betrachtungen
 * Nachdem alle initialen Züge mit nur einer Möglichkeit gemacht wurden und alle Regionen mit Kreisen der Distanzklasse 0
   als invariant markiert wurden, fängt der Algorithmus nun mit Kreisen an, die aus bereits invarianten Regionen herausverschoben
@@ -49,5 +49,5 @@
     * Diese restlichen Möglichkeiten müssen geprüft werden und wenn sie zu keinem Ergebnis führen, dann mache den Zug in die
       Richtung, in der der ursprüngliche Kreis ihm den Weg abgeschnitten hätte
     * Daraufhin hat der ursprüngliche Kreis auch eine Möglichkeit weniger
-    
+
  **Dokumentation der Rundenfunktionen `solelySolutions()` und `lonelyCells()`**

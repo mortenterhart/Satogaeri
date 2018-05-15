@@ -173,6 +173,7 @@ public class DirectionMapper {
     }
 
     public static class InvalidDirectionException extends RuntimeException {
+        private static final long serialVersionUID = 6554290328731713849L;
 
         public InvalidDirectionException(String message) {
             super(message);

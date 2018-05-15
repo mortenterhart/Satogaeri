@@ -34,8 +34,8 @@ public enum LogEngine {
                                "' could not be created!");
             exc.printStackTrace();
         }
-        catch (IOException exc) {
-            exc.printStackTrace();
+        catch (IOException ioe) {
+            ioe.printStackTrace();
         }
     }
 
@@ -58,7 +58,6 @@ public enum LogEngine {
             writer.flush();
         }
         catch (IOException ioe) {
-            ioe.getMessage();
             ioe.printStackTrace();
         }
     }
@@ -76,7 +75,6 @@ public enum LogEngine {
             writer.flush();
         }
         catch (IOException ioe) {
-            ioe.getMessage();
             ioe.printStackTrace();
         }
     }
